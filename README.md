@@ -2,7 +2,7 @@
 
 An online store that sources NFL jerseys, hoodies and game-day tops from overseas sellers and sells them locally to Filipino fans, so they don't have to import them themselves. This repo is our GC2 build: a visitor can browse the catalog, pick a size and quantity, check out with a simulated payment, and get an order saved in our database.
 
-- **Deployed site:** _add the Render URL here_
+- **Deployed site:** https://one00-yard-apparel.onrender.com
 - **GC1 proposal:** Group 1, "100 Yard-Apparel"
 
 ## Roster and ownership
