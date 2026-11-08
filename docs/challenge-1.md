@@ -13,8 +13,8 @@ Set the Postman `baseUrl` to the deployed site before running the requests. Capt
 | 5 | `GET {{baseUrl}}/api/products/not-a-valid-id` | `404`, not `500` | `05-invalid-product-id.png` |
 | 6 | `GET {{baseUrl}}/api/shipping-tiers` | `200` with active shipping tiers | `06-shipping-tiers.png` |
 
-Do not run `POST /api/orders` as part of this set: it persists an order and reduces inventory. Add a state-changing request only after M3 coordinates an approved test environment and test data.
+Do not run `POST /api/orders` as part of this set: it persists an order and reduces inventory. These six read-only checks do not require a state-changing request.
 
 ## Evidence status
 
-Screenshots and deployed responses are pending. The deployed health endpoint, homepage, and product-list endpoint timed out during initial checks. Rerun the six requests after the deployed service is responding and coordinate with M3 before capturing the final evidence.
+Screenshots and deployed responses are pending. The deployed health endpoint, homepage, and product-list endpoint timed out during initial checks. Rerun the six requests after the deployed service is responding, then save the request and response screenshots at the paths above.
