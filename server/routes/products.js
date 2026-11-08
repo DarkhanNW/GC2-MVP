@@ -2,6 +2,7 @@ const express = require('express');
 const Product = require('../models/Product');
 
 const router = express.Router();
+const productCategories = ['jerseys', 'hoodies', 'tees'];
 
 const sortOptions = {
   price_asc: { price: 1 },
@@ -22,6 +23,33 @@ router.get('/', async (req, res, next) => {
   const filter = {};
   const { q, category, sort } = req.query;
 
+  if (q !== undefined && typeof q !== 'string') {
+    return res.status(400).json({
+      error: 'q must be a single search string.',
+      field: 'q',
+    });
+  }
+
+  if (
+    category !== undefined &&
+    (typeof category !== 'string' || !productCategories.includes(category))
+  ) {
+    return res.status(400).json({
+      error: 'category must be one of jerseys, hoodies, or tees.',
+      field: 'category',
+    });
+  }
+
+  if (
+    sort !== undefined &&
+    (typeof sort !== 'string' || !Object.hasOwn(sortOptions, sort))
+  ) {
+    return res.status(400).json({
+      error: 'sort must be price_asc, price_desc, or newest.',
+      field: 'sort',
+    });
+  }
+
   if (typeof q === 'string' && q.trim()) {
     const search = q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const searchPattern = new RegExp(search, 'i');
@@ -32,14 +60,11 @@ router.get('/', async (req, res, next) => {
     ];
   }
 
-  if (typeof category === 'string' && category) {
+  if (category !== undefined) {
     filter.category = category;
   }
 
-  const sortBy =
-    typeof sort === 'string' && sortOptions[sort]
-      ? sortOptions[sort]
-      : sortOptions.newest;
+  const sortBy = sort === undefined ? sortOptions.newest : sortOptions[sort];
 
   try {
     const products = await Product.find(filter).sort(sortBy).lean();
