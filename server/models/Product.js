@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const productCategories = require('../productCategories');
 
 const sizeSchema = new mongoose.Schema(
   {
@@ -29,7 +30,7 @@ const productSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['jerseys', 'hoodies', 'tees'],
+      enum: productCategories,
       required: true,
     },
     team: { type: String, required: true },
