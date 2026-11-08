@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | 100-Yard Apparel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    nav a { margin-right: 15px; }
+
+    form { display: grid; gap: 15px; }
+
+    label { display: block; font-weight: bold; }
+
+    input, select {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+
+    fieldset { padding: 15px; }
+
+    .payment-option {
+      display: block;
+      font-weight: normal;
+      margin: 8px 0;
+    }
+
+    .payment-option input { width: auto; }
+
+    .error { color: #b42318; }
+
+    .error-message { font-size: 14px; }
+
+    .summary {
+      padding: 15px;
+      border: 1px solid #ccc;
+    }
+
+    .summary p {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    button {
+      padding: 12px 20px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>100-Yard Apparel</h1>
+    <p>Built for the Bowl.</p>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="cart.html">Back to Cart</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Checkout</h2>
+
+    <p id="checkout-message" role="status"></p>
+
+    <form id="checkout-form" novalidate>
+      <fieldset>
+        <legend>Customer Information</legend>
+
+        <label for="name">Full Name</label>
+        <input id="name" name="name" required>
+        <p id="name-error" class="error error-message"></p>
+
+        <label for="mobile">Mobile Number</label>
+        <input id="mobile" name="mobile" type="tel"
+               placeholder="09171234567" required>
+        <p id="mobile-error" class="error error-message"></p>
+
+        <label for="email">Email Address</label>
+        <input id="email" name="email" type="email" required>
+        <p id="email-error" class="error error-message"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Shipping Address</legend>
+
+        <label for="street">Street Address</label>
+        <input id="street" name="street" required>
+        <p id="street-error" class="error error-message"></p>
+
+        <label for="city">City</label>
+        <input id="city" name="city" required>
+        <p id="city-error" class="error error-message"></p>
+
+        <label for="province">Province</label>
+        <input id="province" name="province" required>
+        <p id="province-error" class="error error-message"></p>
+
+        <label for="region">Shipping Region</label>
+        <select id="region" name="region" required disabled>
+          <option value="">Loading regions...</option>
+        </select>
+        <p id="region-error" class="error error-message"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Payment Method (Simulated)</legend>
+
+        <label class="payment-option">
+          <input type="radio" name="paymentMethod" value="gcash">
+          GCash
+        </label>
+
+        <label class="payment-option">
+          <input type="radio" name="paymentMethod" value="maya">
+          Maya
+        </label>
+
+        <label class="payment-option">
+          <input type="radio" name="paymentMethod" value="cod">
+          Cash on Delivery
+        </label>
+
+        <p id="paymentMethod-error"
+           class="error error-message"></p>
+      </fieldset>
+
+      <section class="summary">
+        <h3>Order Summary</h3>
+        <div id="order-items"></div>
+
+        <p>
+          <span>Subtotal:</span>
+          <span id="checkout-subtotal">₱0.00</span>
+        </p>
+
+        <p>
+          <span>Shipping:</span>
+          <span id="shipping-fee">Select region</span>
+        </p>
+
+        <p>
+          <strong>Estimated Total:</strong>
+          <strong id="checkout-total">—</strong>
+        </p>
+        <p id="shipping-hint"></p>
+      </section>
+
+      <p id="order-error" class="error" role="alert"></p>
+
+      <button id="place-order" type="submit" disabled>
+        Place Order
+      </button>
+    </form>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>
