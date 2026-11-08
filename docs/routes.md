@@ -13,7 +13,7 @@ All routes return JSON. Every error response has the shape:
 | Method | Route | Purpose | Status codes | Owner |
 | --- | --- | --- | --- | --- |
 | GET | `/api/health` | Server and database status | 200 | M1 |
-| GET | `/api/products` | List for browsing, with search, filter and sort | 200 (empty list is still 200) | M2 |
+| GET | `/api/products` | List for browsing, with search, filter and sort | 200 (empty list is still 200) · 400 | M2 |
 | GET | `/api/products/:id` | One product for Detail | 200 · 404 | M2 |
 | GET | `/api/shipping-tiers` | Regions and fees for the checkout preview | 200 | M3 |
 | POST | `/api/orders` | Validate, recompute total, reduce stock, save | 201 · 400 · 404 · 409 | M3 |
@@ -30,8 +30,8 @@ Query strings (all optional, combinable):
 | Param | Example | Effect |
 | --- | --- | --- |
 | `q` | `?q=steelers` | Case-insensitive match on name, team or description |
-| `category` | `?category=jerseys` | One of `jerseys`, `hoodies`, `tees` |
-| `sort` | `?sort=price_asc` | `price_asc`, `price_desc` or `newest` (default) |
+| `category` | `?category=jerseys` | One of `jerseys`, `hoodies`, `tees`; other values return 400 |
+| `sort` | `?sort=price_asc` | `price_asc`, `price_desc` or `newest` (default); other values return 400 |
 
 Response `200`:
 
@@ -51,6 +51,12 @@ Response `200`:
     "totalStock": 9
   }
 ]
+```
+
+`400` when `q` is repeated or not a string, `category` is not one of the listed values, or `sort` is not one of the listed values. The response includes the invalid field:
+
+```json
+{ "error": "category must be one of jerseys, hoodies, or tees.", "field": "category" }
 ```
 
 `status` is computed by the server: `sold_out` when every size is at 0, `low_stock` when any size is at or below `lowStockAt`, `pre_order` when `preOrder` is true, otherwise `in_stock`. Sold out takes priority over the others.
