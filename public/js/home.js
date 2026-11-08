@@ -1,5 +1,5 @@
 import { renderChrome, productGrid, skeletonGrid, emptyState, errorState } from "./components.js?v=4";
-import { getFeatured } from "./products-api.js?v=4";;
+import { getFeatured } from "./products-api.js?v=4";
 import { qs, qsa } from "./ui.js?v=4";
 import { categoryById, categoryHref } from "./catalog.js?v=4";
 
