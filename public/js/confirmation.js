@@ -1,4 +1,4 @@
-const CART_KEY = 'cart';
+const CART_KEY = '100yard-cart';
 
 const loadingEl = document.getElementById('loading');
 const errorEl = document.getElementById('error');
