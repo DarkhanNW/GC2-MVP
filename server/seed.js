@@ -105,10 +105,10 @@ const products = [
     description: 'A lightweight zip hoodie in Cowboys navy.',
     sizes: [
       { size: 'S', stock: 4 },
-      { size: 'M', stock: 3 },
+      { size: 'M', stock: 4 },
       { size: 'L', stock: 5 },
-      { size: 'XL', stock: 2 },
-      { size: 'XXL', stock: 1 },
+      { size: 'XL', stock: 4 },
+      { size: 'XXL', stock: 4 },
     ],
   },
   {
@@ -151,11 +151,11 @@ const products = [
     description: 'A limited-run championship tee, available by pre-order.',
     preOrder: true,
     sizes: [
-      { size: 'S', stock: 3 },
-      { size: 'M', stock: 4 },
-      { size: 'L', stock: 4 },
-      { size: 'XL', stock: 2 },
-      { size: 'XXL', stock: 1 },
+      { size: 'S', stock: 6 },
+      { size: 'M', stock: 6 },
+      { size: 'L', stock: 6 },
+      { size: 'XL', stock: 5 },
+      { size: 'XXL', stock: 4 },
     ],
   },
 ];
