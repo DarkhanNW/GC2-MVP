@@ -6,6 +6,8 @@ const { connectDB, mongoose } = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const shippingTierRoutes = require('./routes/shippingTiers');
+
 app.use(express.json());
 
 // Health check: confirms the server is up and whether the database is connected.
@@ -21,7 +23,10 @@ app.use('/api/products', require('./routes/products'));
 
 // Feature routes are mounted here as each lane merges them, for example:
 // app.use('/api/orders', require('./routes/orders'));           // M3 (POST, GET /:id), M6 (GET /)
-// app.use('/api/shipping-tiers', require('./routes/shippingTiers')); // M3
+
+// app.use('/api/shipping-tiers', require('./routes/shippingTiers')); // M1
+app.use('/api/shipping-tiers', shippingTierRoutes);
+
 // app.use('/api/metrics', require('./routes/metrics'));         // M6
 
 // Any /api path that no route handled is a JSON 404, never an HTML page.
@@ -31,6 +36,7 @@ app.use('/api', (req, res) => {
 
 // The front end: every screen is a file in public/.
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
 
 // Error handler: every error leaves as { error, field? } with a sensible status.
 // Throw or pass an error with .status (and optionally .field) from any route.

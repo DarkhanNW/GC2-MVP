@@ -7,6 +7,7 @@ const shippingTierSchema = new mongoose.Schema(
       enum: ['Metro Manila', 'Luzon', 'Visayas', 'Mindanao'],
       required: true,
       unique: true,
+      trim: true,
     },
     fee: { type: Number, min: 0, validate: Number.isInteger, required: true },
     freeShippingMin: {
