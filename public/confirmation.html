@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed | 100-Yard Apparel</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main>
+    <div id="loading">Loading your order...</div>
+    <div id="error" hidden>
+        <p id="error-msg"></p>
+        <a href="/list.html">Back to Shop</a>
+    </div>
+    <div id="order" hidden>
+        <h1>Thanks for shopping with us! A summary of your order:</h1>
+        <p id="order-no"></p>
+        <ol id="items"></ol>
+        <p>Subtotal: ₱<span id="subtotal"></span></p>
+        <p id="shipping"></p>
+        <p id="total"></p>
+        <p id="payment"></p>
+    </div>
+
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/confirmation.js"></script>
+</body>
+</html>
