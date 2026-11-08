@@ -48,6 +48,7 @@ export function stockMessage(product, selectedSize = "", state = stockState(prod
   const status = product?.status || statusFor(product, state);
 
   if (status === "sold_out") return "Sold out — all sizes are unavailable.";
+  if (status === "pre_order") return "Available for pre-order.";
 
   if (selectedSize) {
     const count = state.counts[selectedSize] ?? 0;
