@@ -1,8 +1,8 @@
 const express = require('express');
 const Product = require('../models/Product');
+const productCategories = require('../productCategories');
 
 const router = express.Router();
-const productCategories = ['jerseys', 'hoodies', 'tees'];
 
 const sortOptions = {
   price_asc: { price: 1 },
