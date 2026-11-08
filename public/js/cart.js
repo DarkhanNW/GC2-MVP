@@ -3,9 +3,9 @@ const cartMessage = document.getElementById('cart-message');
 const cartItems = document.getElementById('cart-items');
 const subtotal = document.getElementById('subtotal');
 const checkoutButton = document.getElementById('checkout-button');
+const cartCount = document.getElementById('cart-count');
 
-// Get the cart saved in the browser.
-// We'll coordinate this format with Justin's Detail page.
+
 const CART_KEY = '100yard-cart';
 
 function getCart() {
@@ -31,6 +31,12 @@ function formatPrice(price) {
 function renderCart() {
   const cart = getCart();
   cartItems.replaceChildren();
+
+  const itemCount = cart.reduce((sum, item) => {
+    return sum + item.qty;
+  }, 0);
+
+  cartCount.textContent = itemCount;
 
   if (cart.length === 0) {
     cartMessage.textContent = 'Your cart is empty.';
