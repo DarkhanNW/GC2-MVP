@@ -6,7 +6,7 @@ backend to be running.
 ## Setup
 
 ```bash
-cd tests
+cd public/tests
 npm install
 npx playwright install chromium
 ```
@@ -16,9 +16,9 @@ npx playwright install chromium
 From the `tests/` directory:
 
 ```bash
-npm run test:home     # PR 1
-npm run test:list     # PR 2, after PR 1 is merged
-npm run test:detail   # PR 3, after PR 1 and PR 2 are merged
+npm run test:home     # #34 PR
+npm run test:list     # #35 PR, after #34 PR is merged
+npm run test:detail   # #36 PR, after #34 PR and #35 PR are merged
 npm test              # all specs present in the current stack
 ```
 
@@ -29,7 +29,7 @@ pre-order states without a backend.
 
 ## Notes
 
-- This test harness is part of PR 1; PR 2 and PR 3 add one spec each.
+- This test harness is part of #34 PR; #35 PR and #36 PR add one spec each.
 - The fixture is intentionally test-only. It is never served as `/api/products`.
 - Phone checks use a real 390 × 844 Playwright viewport.
 - The normal-flow specs also fail on page errors or console errors.
