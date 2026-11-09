@@ -1,0 +1,14 @@
+{
+  "name": "100-yard-frontend-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:home": "playwright test e2e/home.spec.js",
+    "test:list": "playwright test e2e/list.spec.js",
+    "test:detail": "playwright test e2e/detail.spec.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0"
+  }
+}
