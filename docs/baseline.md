@@ -6,9 +6,9 @@ Chrome DevTools → Lighthouse → Mobile.
 
 | Category | Score |
 |---|---:|
-| Performance | [ ] |
-| Accessibility | [ ] |
-| Best Practices | [ ] |
+| Performance | [95] |
+| Accessibility | [95] |
+| Best Practices | [100] |
 
 ## First-load requests and transfer size
 
@@ -16,8 +16,8 @@ Chrome DevTools → Network → Disable cache → reload `/list.html`.
 
 | Measure | Result |
 |---|---:|
-| Total requests | [ ] |
-| Total transfer size | [ ] KB |
+| Total requests | [17] |
+| Total transfer size | [43.2] kB |
 
 ## List route response time
 
@@ -25,10 +25,10 @@ Chrome DevTools → Network → Disable cache → reload `/list.html`.
 
 | Run | Response time |
 |---|---:|
-| 1 | [ ] ms |
-| 2 | [ ] ms |
-| 3 | [ ] ms |
-| Median | [ ] ms |
+| 1 | [48] ms |
+| 2 | [62] ms |
+| 3 | [54] ms |
+| Median | [54] ms |
 
 ## Three known weaknesses
 
