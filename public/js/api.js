@@ -1,3 +1,4 @@
+/* API fetcher function */
 /*
  How to load the fetch helper function: paste <script src="js/api.js"></script> before the last body tag, and BEFORE any of your own screens' scripts.
  GET and POST examples:
