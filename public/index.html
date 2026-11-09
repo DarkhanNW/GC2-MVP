@@ -1,16 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>100-Yard Apparel</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <title>100-Yard Apparel — Built for the Bowl</title>
+  <meta name="description" content="NFL jerseys, hoodies and tees, sourced overseas and delivered to Filipino fans.">
+  <link rel="stylesheet" href="css/tokens.css?v=4">
+  <link rel="stylesheet" href="css/base.css?v=4">
+  <link rel="stylesheet" href="css/components.css?v=4">
+  <link rel="stylesheet" href="css/pages.css?v=4">
+  <script type="module" src="js/home.js?v=4"></script>
 </head>
 <body>
-  <!-- Placeholder. M4 replaces this with the Home screen (Issue: Screen: Home). -->
-  <h1>100-Yard Apparel</h1>
-  <p>Built for the Bowl. NFL gear your city doesn't stock.</p>
-  <p>Server is running. Check <a href="/api/health">/api/health</a>.</p>
-  
-  <script src="js/api.js"></script>
+  <header id="site-header" class="site-header"></header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__inner">
+        <p class="hero__eyebrow">Sourced overseas · Delivered locally</p>
+        <h1>Built for the Bowl.</h1>
+        <p>NFL jerseys, hoodies and tees — hand-picked from trusted overseas sellers and shipped straight to your door in the Philippines. No import forms, no customs surprises.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="list.html">Shop all gear</a>
+          <a class="btn btn--ghost hero__ghost" href="list.html?category=jerseys">Browse jerseys</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section__head">
+        <h2 class="section__title">Shop by category</h2>
+      </div>
+      <div class="tiles">
+        <a class="tile" href="list.html?category=jerseys" data-category="jerseys">
+          <span class="tile__label">Team Jerseys</span>
+          <span class="tile__count">Home &amp; away, stitched numbers</span>
+        </a>
+        <a class="tile" href="list.html?category=hoodies" data-category="hoodies">
+          <span class="tile__label">Hoodies &amp; Fleece</span>
+          <span class="tile__count">Sideline pullovers &amp; fleece</span>
+        </a>
+        <a class="tile" href="list.html?category=tees" data-category="tees">
+          <span class="tile__label">Tees &amp; Tops</span>
+          <span class="tile__count">Lightweight tees &amp; polos</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section__head">
+        <h2 class="section__title">Trending this week</h2>
+        <a class="link-more" href="list.html">Shop all →</a>
+      </div>
+      <div class="grid" id="featured-grid"></div>
+    </section>
+
+    <section class="container section">
+      <div class="trust">
+        <div class="trust__item"><span class="trust__dot"></span><span><strong>Ships in 10–14 days</strong><br>Tracked from overseas</span></div>
+        <div class="trust__item"><span class="trust__dot"></span><span><strong>Local sizing guide</strong><br>Converted to PH sizes</span></div>
+        <div class="trust__item"><span class="trust__dot"></span><span><strong>GCash &amp; COD</strong><br>Pay how you already pay</span></div>
+        <div class="trust__item"><span class="trust__dot"></span><span><strong>7-day swap</strong><br>Wrong size? We'll fix it</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
 </body>
 </html>
