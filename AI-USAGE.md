@@ -10,6 +10,8 @@ One row per meaningful use of an AI assistant. Newest at the bottom.
 
 | Nov 6 | M1 | Claude | #23 api() fetch helper | Step-by-step guidance on fetch, headers, spread, await, try/catch and ?. / ??. Creating test cases to use in the console. All code was written by me. | Changed index.html in public/ | Checked with Console and Network tests (200, 404, POST payload, error message when server's down)
 
+| Nov 7 | M1 | Claude | #27 GET /api/shipping-tiers | Step-by-step guidance on writing a Mongoose model, creating a route file, how to mount using app.use(), creating a semi-automated test on Postman. All code was written by me, and reviewed by the AI. | Kept the structure. Changed sort() order to alphabetical to avoid a schema change.  | Checked in the browser through /api/shipping-tiers, and via Postman, temporarily changed 'active' key for Mindanao region to test filter in find().
+
 | Nov 8 | M2 | Copilot | Implement the catalog seed script for Issue #24 | Added product and shipping-tier models, 10 sample products and four shipping tiers; adjusted stock to demonstrate different product statuses | Ran `npm run seed` twice against an isolated Atlas database; queried the saved data and checked categories, stock examples, pre-order, and shipping fees |
 
 | Nov 8 | M2 | Copilot | Implement `GET /api/products` for Issue #25 | Added catalog search, category filtering, sorting, computed status and stock fields, and query validation | Checked the endpoint over HTTP against the isolated database, including combined filters, empty results, and invalid query values |
@@ -20,3 +22,5 @@ One row per meaningful use of an AI assistant. Newest at the bottom.
 
 | Nov 8 | M1 | Claude | #26 GET /api/products/:id | Step-by-step guidance on writing router.get() and various hints on if checks for malformed and invalid product ids. All code was written by me, and reviewed by the AI. | Kept the structure. Modified .routes/products.js instead of creating a new file.  | Checked via Postman (/api/products/ ; /api/products/aaa ; /api/products/aaaaaaaaaaaaaaaaaaaaaaaa ; /api/products/(actual id)).
 | Nov 9 | M3 | ChatGPT | #28 Understanding the order API requirements. Developing the Order model and totals service. Implementing validation and transaction logic Troubleshooting MongoDB connectivity and API testing.
+
+| Nov 6-8 | M4 | DeepSeek | #34 Build the Home screen. Handle loading, empty, and error states, support phone width. | Visual design was dictated by me. Added the shared frontend based on the structure from the docs. Added Home and Browse links. | 5 Playwright tests: featured rendering/status badges, loading skeleton, empty state, retryable error state, and 390 × 844 phone layout with no horizontal overflow. Normal-flow page/console errors were asserted empty.
