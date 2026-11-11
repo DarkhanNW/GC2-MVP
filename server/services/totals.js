@@ -20,7 +20,7 @@ async function calculateTotals(items, region) {
   }
 
   const shippingFee =
-    subtotal >= shippingTier.freeShippingMin ? 0 : shippingTier.fee;
+    shippingTier.freeShippingMin > 0 && subtotal >= shippingTier.freeShippingMin ? 0 : shippingTier.fee;
 
   return {
     subtotal,
