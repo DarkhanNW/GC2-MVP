@@ -19,6 +19,28 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+router.get('/:id', async (req, res, next) => {
+  if (!mongoose.isObjectIdOrHexString(req.params.id)) {
+    return res.status(404).json({
+      error: 'Order not found.',
+    });
+  }
+
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        error: 'Order not found.',
+      });
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/', async (req, res, next) => {
   let session;
 
