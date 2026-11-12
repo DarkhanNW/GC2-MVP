@@ -18,6 +18,7 @@ function createError(message, status, field) {
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
+
 router.get('/:id', async (req, res, next) => {
   if (!mongoose.isObjectIdOrHexString(req.params.id)) {
     return res.status(404).json({
@@ -39,6 +40,7 @@ router.get('/:id', async (req, res, next) => {
     next(error);
   }
 });
+
 router.post('/', async (req, res, next) => {
   let session;
 

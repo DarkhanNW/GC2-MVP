@@ -1,32 +1,17 @@
-
 const ShippingTier = require('../models/ShippingTier');
 
 async function calculateTotals(items, region) {
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.unitPrice * item.qty,
-    0
-  );
-
-  const shippingTier = await ShippingTier.findOne({
-    region,
-    active: true,
-  }).lean();
-
-  if (!shippingTier) {
-    const error = new Error('Please select a valid shipping region.');
-    error.status = 400;
-    error.field = 'customer.region';
-    throw error;
-  }
-
-  const shippingFee =
-    subtotal >= shippingTier.freeShippingMin ? 0 : shippingTier.fee;
-
-  return {
-    subtotal,
-    shippingFee,
-    total: subtotal + shippingFee,
-  };
+    const subtotal = items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
+    const tier = await ShippingTier.findOne({ region, active: true }).lean();
+    if (!tier) {
+        const err = new Error('Please select a valid shipping region.');
+        err.status = 400;
+        err.field = 'customer.region';
+        throw err;
+    }
+    const isFree = (tier.freeShippingMin > 0) && (subtotal >= tier.freeShippingMin);
+    const shippingFee = isFree ? 0 : tier.fee;
+    return { subtotal, shippingFee, total: subtotal + shippingFee };
 }
 
 module.exports = { calculateTotals };
