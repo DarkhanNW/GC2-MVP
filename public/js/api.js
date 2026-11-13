@@ -48,7 +48,8 @@ async function api(path, options={}) {
 
     try {
         response = await fetch(path, config);
-    } catch {
+    } catch (err) {
+        if (err?.name === "AbortError") throw err;
         throw { status: 0, error: "Network Error."};
     }
 
