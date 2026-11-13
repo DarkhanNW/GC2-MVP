@@ -1,23 +1,29 @@
 # Baseline
 
+Date: November 9, 2026
+
+Time: 9:00 AM
+
+Performed on a local server on `localhost:3000`
+
 ## Lighthouse mobile
 
 Chrome DevTools → Lighthouse → Mobile.
 
 | Category | Score |
 |---|---:|
-| Performance | [75] |
-| Accessibility | [98] |
-| Best Practices | [100] |
+| Performance | 75 |
+| Accessibility | 98 |
+| Best Practices | 100 |
 
 ## First-load requests and transfer size
 
-Chrome DevTools → Network → Disable cache → reload `/list.html`.
+Chrome DevTools → Network → Disable cache → reload `localhost:3000/list.html`.
 
 | Measure | Result |
 |---|---:|
-| Total requests | [17] |
-| Total transfer size | [43.2] kB |
+| Total requests | 17 |
+| Total transfer size | 43.2 kB |
 
 ## List route response time
 
@@ -25,10 +31,10 @@ Chrome DevTools → Network → Disable cache → reload `/list.html`.
 
 | Run | Response time |
 |---|---:|
-| 1 | [48] ms |
-| 2 | [62] ms |
-| 3 | [54] ms |
-| Median | [54] ms |
+| 1 | 48 ms |
+| 2 | 62 ms |
+| 3 | 54 ms |
+| Median | 54 ms |
 
 ## Three known weaknesses
 
