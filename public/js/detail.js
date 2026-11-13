@@ -3,8 +3,9 @@ import {
 } from "./components.js?v=4";
 import { getProduct } from "./products-api.js?v=4";
 import { qs, escapeHTML, money, imageFor } from "./ui.js?v=4";
-import { stockState, statusFor, stockMessage } from "./stock.js?v=4";
+import { stockState, stockMessage } from "./stock.js?v=4";
 import { BRAND, categoryLabel } from "./catalog.js?v=4";
+import { addToCart, MAX_QTY } from "./cart-store.js?v=4";
 
 const id = new URLSearchParams(location.search).get("id");
 const root = qs("#detail-root");
@@ -46,7 +47,7 @@ function render(p) {
 
   const image = imageFor(p);
   const stock = stockState(p);
-  const status = p.status || statusFor(p, stock);
+  const status = p.status;
   const soldOut = status === "sold_out";
   const lowSizes = new Set(stock.lowSizes.map(({ size }) => size));
 
@@ -88,6 +89,12 @@ function render(p) {
           <p class="stock-note${soldOut || lowSizes.size ? " is-low" : ""}" id="stock-note" aria-live="polite">${escapeHTML(stockMessage(p, "", stock))}</p>
         </div>
 
+        <div class="field">
+          <label class="field__label" for="quantity">Quantity</label>
+          <input id="quantity" class="input quantity-input" type="number"
+                 min="1" max="1" step="1" value="1" disabled>
+        </div>
+
         <button class="btn btn--primary btn--block" type="button" id="add-to-cart" disabled>
           ${soldOut ? "Sold out" : "Select a size"}
         </button>
@@ -108,13 +115,22 @@ function wireSizeSelector(p, soldOut, stock, lowSizes) {
   const buttons = [...root.querySelectorAll(".size-btn")];
   const cta = qs("#add-to-cart");
   const note = qs("#stock-note");
+  const quantity = qs("#quantity");
   let selected = "";
 
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      if (btn.disabled) return;
-      selected = btn.dataset.size;
+      const next = btn.dataset.size;
+      const changed = next !== selected;
+      selected = next;
+
       buttons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+
+      const available = Number(stock.counts[selected]);
+      const max = Math.max(1, Math.min(MAX_QTY, Number.isFinite(available) ? available : 0));
+      quantity.max = String(max);
+      if (changed) quantity.value = "1";
+      quantity.disabled = false;
 
       note.textContent = stockMessage(p, selected, stock);
       note.classList.toggle("is-low", lowSizes.has(selected));
@@ -126,9 +142,36 @@ function wireSizeSelector(p, soldOut, stock, lowSizes) {
 
   if (soldOut) return;
 
+  quantity.addEventListener("change", () => {
+    const max = Math.max(1, Number(quantity.max) || 1);
+    const value = Math.trunc(Number(quantity.value));
+    quantity.value = String(Number.isFinite(value)
+      ? Math.min(max, Math.max(1, value))
+      : 1);
+  });
+
   cta.addEventListener("click", () => {
-    if (!selected || stock.counts[selected] <= 0) return;
-    showToast(`${p.name} (${selected}) added to cart`);
+    const available = Number(stock.counts[selected]);
+    if (!selected || !Number.isFinite(available) || available <= 0) return;
+
+    const max = Math.min(MAX_QTY, available);
+    const qty = Number(quantity.value);
+    if (!Number.isInteger(qty) || qty < 1 || qty > max) {
+      showToast(`Choose a quantity between 1 and ${max}.`);
+      return;
+    }
+
+    const { added } = addToCart({
+      productId: p._id,
+      name: p.name,
+      price: p.price,
+      size: selected,
+      qty,
+    });
+
+    showToast(added > 0
+      ? `${p.name} (${selected}) ×${added} added to cart`
+      : `Maximum quantity reached for ${p.name} (${selected})`);
   });
 }
 
