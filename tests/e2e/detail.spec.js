@@ -24,7 +24,7 @@ const cartFrom = (page) => page.evaluate(() =>
   JSON.parse(localStorage.getItem("100yard-cart") || "[]"));
 
 test.describe("Detail screen", () => {
-  test("renders full product info, low-stock sizes, and Add to Cart feedback", async ({ page }) => {
+  test("renders full product info and saves the selected quantity to the cart", async ({ page }) => {
     await installApiMock(page);
     await page.goto(`/detail.html?id=${lowStock._id}`);
 
@@ -47,7 +47,7 @@ test.describe("Detail screen", () => {
 
     await page.locator("#quantity").fill("2");
     await page.locator("#add-to-cart").click();
-    await expect(page.locator("#toast")).toContainText("added to cart");
+    await expect(page.locator("#toast")).toContainText("2 added");
 
     const cart = await cartFrom(page);
     expect(cart).toHaveLength(1);
