@@ -153,7 +153,7 @@ export function errorState(err, { title = "Something went wrong" } = {}) {
   return `
     <div class="state">
       <p class="state__title">${escapeHTML(title)}</p>
-      <p>${escapeHTML(message)}</p>      
+      <p>${escapeHTML(message)}</p>
       <div class="state__action">
         <button class="btn btn--primary" type="button" data-retry>Try again</button>
       </div>
