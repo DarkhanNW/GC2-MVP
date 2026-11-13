@@ -8,6 +8,8 @@ Performed on a local server on `localhost:3000`
 
 ## Lighthouse mobile
 
+`localhost:3000/index.html`
+
 Chrome DevTools → Lighthouse → Mobile.
 
 | Category | Score |
@@ -18,6 +20,8 @@ Chrome DevTools → Lighthouse → Mobile.
 
 ## First-load requests and transfer size
 
+`localhost:3000/list.html`
+
 Chrome DevTools → Network → Disable cache → reload `localhost:3000/list.html`.
 
 | Measure | Result |
@@ -26,6 +30,8 @@ Chrome DevTools → Network → Disable cache → reload `localhost:3000/list.ht
 | Total transfer size | 43.2 kB |
 
 ## List route response time
+
+`localhost:3000/list.html`
 
 `GET /api/products`, measured from the Network tab or Postman.
 
