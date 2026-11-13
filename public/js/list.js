@@ -32,7 +32,8 @@ function writeParams(p, { push = false } = {}) {
   history[push ? "pushState" : "replaceState"](null, "", url);
 }
 
-function syncControls(p) {
+function syncControls(p, { syncSearch = false } = {}) {
+  if (syncSearch) els.search.value = p.q;
   els.search.value = p.q;
   els.sort.value = p.sort;
   els.categoryChips.forEach((btn) =>
@@ -41,9 +42,9 @@ function syncControls(p) {
 
 /* ---------- render ---------- */
 
-async function load() {
+async function load({ syncSearch = false } = {}) {
   const params = parseListState(location.search);
-  syncControls(params);
+  syncControls(params, { syncSearch });
   syncChrome({ active: "list", category: params.category });
 
   controller?.abort();
@@ -75,7 +76,7 @@ async function load() {
     els.grid.innerHTML = "";
     els.count.textContent = "";
     els.status.innerHTML = errorState(err);
-    els.status.querySelector("[data-retry]")?.addEventListener("click", load);
+    els.status.querySelector("[data-retry]")?.addEventListener("click", () => load());
   } finally {
     if (controller === ctrl) els.grid.setAttribute("aria-busy", "false");
   }
@@ -89,7 +90,14 @@ function apply(patch, { push = false } = {}) {
   // control changes; otherwise choosing a filter would erase the query.
   if (!("q" in patch)) onSearchInput.cancel();
   const next = "q" in patch ? patch : { ...patch, q: els.search.value.trim() };
-  writeParams({ ...current, ...next }, { push });
+  const nextState = { ...current, ...next };
+  
+  if (buildListHref(nextState, location.pathname) ===
+      buildListHref(current, location.pathname)) {
+    return;
+  }
+
+  writeParams(nextState, { push });
   load();
 }
 
@@ -106,7 +114,7 @@ els.categoryChips.forEach((btn) => {
 
 window.addEventListener("popstate", () => {
   onSearchInput.cancel();
-  load();
+  load({ syncSearch: true });
 });
 
-load();
+load({ syncSearch: true });
