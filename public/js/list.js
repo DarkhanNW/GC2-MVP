@@ -34,7 +34,6 @@ function writeParams(p, { push = false } = {}) {
 
 function syncControls(p, { syncSearch = false } = {}) {
   if (syncSearch) els.search.value = p.q;
-  els.search.value = p.q;
   els.sort.value = p.sort;
   els.categoryChips.forEach((btn) =>
     btn.setAttribute("aria-pressed", String(btn.dataset.category === p.category)));
