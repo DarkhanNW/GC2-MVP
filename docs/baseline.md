@@ -8,7 +8,7 @@ Performed on a local server on `localhost:3000`
 
 ## Lighthouse mobile
 
-`localhost:3000/index.html`
+`localhost:3000/list.html`
 
 Chrome DevTools → Lighthouse → Mobile.
 
