@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <title>Shop NFL Gear — 100-Yard Apparel</title>
+  <link rel="stylesheet" href="css/tokens.css?v=4">
+  <link rel="stylesheet" href="css/base.css?v=4">
+  <link rel="stylesheet" href="css/components.css?v=4">
+  <link rel="stylesheet" href="css/pages.css?v=4">
+  <script type="module" src="js/list.js?v=4"></script>
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="container section">
+    <header class="page-head">
+      <h1 class="page-title">Shop NFL gear</h1>
+      <p class="page-sub">Jerseys, hoodies and tees — sourced overseas, delivered locally.</p>
+    </header>
+
+    <div class="list-layout">
+      <aside class="filters" aria-label="Filters">
+        <div class="field">
+          <span class="field__label">Category</span>
+          <div class="chips" role="group" aria-label="Filter by category">
+            <button class="chip" type="button" data-category="">All</button>
+            <button class="chip" type="button" data-category="jerseys">Team Jerseys</button>
+            <button class="chip" type="button" data-category="hoodies">Hoodies &amp; Fleece</button>
+            <button class="chip" type="button" data-category="tees">Tees &amp; Tops</button>
+          </div>
+        </div>
+
+        <a class="btn btn--ghost btn--block" href="list.html">Clear all</a>
+      </aside>
+
+      <div class="list-main">
+        <div class="toolbar">
+          <div class="search">
+            <input class="input" id="search" type="search" placeholder="Search team or product…" aria-label="Search products">
+          </div>
+          <div class="toolbar__right">
+            <span class="result-count" id="result-count" aria-live="polite"></span>
+            <label class="sr-only" for="sort">Sort by</label>
+            <select class="select select--compact" id="sort">
+              <option value="newest">Newest</option>
+              <option value="price_asc">Price: low to high</option>
+              <option value="price_desc">Price: high to low</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid" id="product-grid"></div>
+        <div id="list-status"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>

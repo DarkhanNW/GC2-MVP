@@ -6,7 +6,7 @@ backend to be running.
 ## Setup
 
 ```bash
-cd public/tests
+cd tests
 npm install
 npx playwright install chromium
 ```
@@ -22,8 +22,7 @@ npm run test:detail   # #36 PR, after #34 PR and #35 PR are merged
 npm test              # all specs present in the current stack
 ```
 
-The static server serves the frontend from the repository root (the parent of
-`tests/`). Playwright intercepts `/api/products` and `/api/products/:id`, so the
+The static server serves the frontend from `public/` in the repository root. Playwright intercepts `/api/products` and `/api/products/:id`, so the
 tests can exercise normal, loading, empty, error, 404, low-stock, sold-out, and
 pre-order states without a backend.
 
