@@ -1,11 +1,16 @@
 /* One serializer/parser for the list page's URL state.
    Contract: q, category, sort (newest by default). */
 
+const CATEGORIES = new Set(["jerseys", "hoodies", "tees"]);
+const SORTS = new Set(["newest", "price_asc", "price_desc"]);
+
 function normalizeListState(state = {}) {
+  const category = String(state.category ?? "");
+  const sort = String(state.sort || "newest");
   return {
-    category: String(state.category ?? ""),
+    category: CATEGORIES.has(category) ? category : "",
     q: String(state.q ?? ""),
-    sort: String(state.sort || "newest"),
+    sort: SORTS.has(sort) ? sort : "newest",
   };
 }
 
