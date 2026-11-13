@@ -148,10 +148,12 @@ export function emptyState({ title, message, action = "" }) {
 }
 
 export function errorState(err, { title = "Something went wrong" } = {}) {
+  const message =
+    err?.error || err?.message || "We couldn't load this right now.";
   return `
     <div class="state">
       <p class="state__title">${escapeHTML(title)}</p>
-      <p>${escapeHTML(err?.message || "We couldn't load this right now.")}</p>
+      <p>${escapeHTML(message)}</p>
       <div class="state__action">
         <button class="btn btn--primary" type="button" data-retry>Try again</button>
       </div>

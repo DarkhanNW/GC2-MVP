@@ -61,6 +61,22 @@ test.describe("List screen", () => {
     await expect(page.locator("#search")).toHaveValue("new york giants");
   });
 
+  test("does not show an error when a pending search is aborted", async ({ page }) => {
+    await installApiMock(page, { delay: 600 });
+    await page.goto("/list.html");
+    await expect(page.locator("#product-grid .card")).toHaveCount(6);
+
+    const pending = page.waitForRequest((req) =>
+      new URL(req.url()).searchParams.get("q") === "dolphins");
+
+    await page.locator("#search").fill("dolphins");
+    await pending;
+    await page.locator("#search").fill("raiders");
+
+    await expect(page.locator("#product-grid .card")).toHaveCount(1);
+    await expect(page.locator("#list-status .state__title")).toHaveCount(0);
+  });
+
   test("filters by category and sorts by price", async ({ page }) => {
     await installApiMock(page);
     await page.goto("/list.html");
@@ -154,6 +170,7 @@ test.describe("List screen", () => {
     await page.goto("/list.html");
 
     await expect(page.locator("#list-status .state__title")).toHaveText("Something went wrong");
+    await expect(page.locator("#list-status .state")).toContainText("Test API failure");
     await expect(page.locator("#list-status [data-retry]")).toBeVisible();
   });
 
@@ -165,7 +182,7 @@ test.describe("List screen", () => {
         await route.fulfill({
           status: 500,
           contentType: "application/json",
-          body: JSON.stringify({ message: "Test API failure" }),
+          body: JSON.stringify({ error: "Test API failure" }),
         });
         return;
       }
