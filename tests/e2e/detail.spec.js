@@ -190,6 +190,28 @@ test.describe("Detail screen", () => {
     expect(cart[0].qty).toBe(3);
   });
 
+  test("does not exceed stock when the same line is added twice", async ({ page }) => {
+    await installApiMock(page);
+    await page.goto(`/detail.html?id=${lowStockTwo._id}`);
+    await page.locator('.size-btn[data-size="M"]').click();
+
+    await expect(page.locator("#quantity")).toHaveAttribute("max", "2");
+    await page.locator("#quantity").fill("2");
+    await page.locator("#add-to-cart").click();
+    await expect(page.locator("#toast")).toContainText("2 added");
+
+    await page.locator("#add-to-cart").click();
+    await expect(page.locator("#toast")).toContainText("Maximum quantity reached");
+
+    const cart = await cartFrom(page);
+    expect(cart).toHaveLength(1);
+    expect(cart[0]).toMatchObject({
+      productId: lowStockTwo._id,
+      size: "M",
+      qty: 2,
+    });
+  });
+
   test("fits a phone viewport without horizontal overflow", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await installApiMock(page);
