@@ -1,6 +1,7 @@
 const express = require('express');
 const Product = require('../models/Product');
 const productCategories = require('../productCategories');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 
@@ -85,6 +86,29 @@ router.get('/', async (req, res, next) => {
     );
   } catch (error) {
     next(error);
+  }
+});
+
+router.get('/:id', async (req, res, next) => {
+   if (!mongoose.isObjectIdOrHexString(req.params.id)) {
+    return res.status(404).json({
+      error: 'Product not found',
+    })
+  }
+
+  try {
+    const product = await Product.findById(req.params.id).lean();
+    if (!product) {
+    return res.status(404).json({
+      error: 'Product not found',
+    });
+  }
+    res.json({ 
+      ...product,
+      status: getStatus(product),
+    });
+  } catch (err) {
+    next(err);
   }
 });
 
