@@ -25,14 +25,6 @@
 .logo__mark::before { top: 7px; }
 .logo__mark::after  { bottom: 7px; }
 
-.cart-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 7px 14px; border-radius: 999px;
-  border: 1px solid var(--line); background: var(--bone);
-  font-size: .85rem; font-weight: 600;
-}
-.cart-btn:hover { border-color: var(--ink); }
-
 .site-nav {
   display: flex; gap: var(--s4);
   overflow-x: auto; scrollbar-width: none;

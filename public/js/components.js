@@ -1,7 +1,6 @@
 import { escapeHTML, money, imageFor } from "./ui.js?v=4";
 import { statusFor } from "./stock.js?v=4";
 import { BRAND, CATEGORIES, categoryHref } from "./catalog.js?v=4";
-import { cartCount } from "./cart-store.js?v=4";
 
 /* ---------------- chrome ---------------- */
 
@@ -29,12 +28,10 @@ export function renderChrome({ active = "", category = "" } = {}) {
       data-nav-key="${link.key}"
       data-nav-cat="${link.cat ?? ""}"${isActiveLink(link, active, category) ? ' aria-current="page"' : ""}>${link.label}</a>
   `).join("");
-  const count = cartCount();
 
   header.innerHTML = `
     <div class="container site-header__bar">
       <a class="logo" href="index.html"><span class="logo__mark" aria-hidden="true"></span>${BRAND.mark}</a>
-      <a class="cart-btn" href="cart.html" aria-label="Cart, ${count} ${count === 1 ? "item" : "items"}">Cart (<span data-cart-count>${count}</span>)</a>
     </div>
     <nav class="container site-nav" aria-label="Primary">${navHTML}</nav>`;
 
@@ -53,18 +50,6 @@ export function renderChrome({ active = "", category = "" } = {}) {
       <span>© ${new Date().getFullYear()} ${BRAND.name}</span>
       <span>Metro Manila, PH</span>
     </div>`;
-}
-
-/* Update the header count after a cart mutation. */
-export function refreshCartCount() {
-  const count = cartCount();
-  document.querySelectorAll("[data-cart-count]").forEach((node) => {
-    node.textContent = String(count);
-  });
-  document.querySelector(".cart-btn")?.setAttribute(
-    "aria-label",
-    `Cart, ${count} ${count === 1 ? "item" : "items"}`,
-  );
 }
 
 /* Update only the active nav item; do not rebuild the chrome on every load. */
@@ -163,10 +148,12 @@ export function emptyState({ title, message, action = "" }) {
 }
 
 export function errorState(err, { title = "Something went wrong" } = {}) {
+  const message =
+    err?.error || err?.message || "We couldn't load this right now.";
   return `
     <div class="state">
       <p class="state__title">${escapeHTML(title)}</p>
-      <p>${escapeHTML(err?.message || "We couldn't load this right now.")}</p>
+      <p>${escapeHTML(message)}</p>
       <div class="state__action">
         <button class="btn btn--primary" type="button" data-retry>Try again</button>
       </div>
