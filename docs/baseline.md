@@ -1,46 +1,48 @@
 # Baseline
 
-Date: November 9, 2026
-
-Time: 9:00 AM
-
 Performed on a local server on `localhost:3000`
+
+Date: November 9, 2026 at 9:00 AM
+
+Reran on the deployed site on `https://one00-yard-apparel.onrender.com`
+
+Date: November 14, 2026 at 12:40 PM
 
 ## Lighthouse mobile
 
-`localhost:3000/list.html`
+`localhost:3000/list.html` and `https://one00-yard-apparel.onrender.com/list.html`
 
 Chrome DevTools → Lighthouse → Mobile.
 
-| Category | Score |
-|---|---:|
-| Performance | 75 |
-| Accessibility | 98 |
-| Best Practices | 100 |
+| Category | Local Score | Remote Score |
+|---|---|---|
+| Performance | 75 | 75 |
+| Accessibility | 98 | 98 |
+| Best Practices | 100 | 100 |
 
 ## First-load requests and transfer size
 
-`localhost:3000/list.html`
+`localhost:3000/list.html` and `https://one00-yard-apparel.onrender.com/list.html`
 
-Chrome DevTools → Network → Disable cache → reload `localhost:3000/list.html`.
+Chrome DevTools → Network → Disable cache → reload page.
 
-| Measure | Result |
-|---|---:|
-| Total requests | 17 |
-| Total transfer size | 43.2 kB |
+| Measure | Local Result | Remote Result |
+|---|---|---|
+| Total requests | 17 | 18 |
+| Total transfer size | 43.2 kB | 32.4 kB |
 
 ## List route response time
 
-`localhost:3000/list.html`
+`localhost:3000/list.html` and `https://one00-yard-apparel.onrender.com/list.html`
 
 `GET /api/products`, measured from the Network tab or Postman.
 
-| Run | Response time |
-|---|---:|
-| 1 | 48 ms |
-| 2 | 62 ms |
-| 3 | 54 ms |
-| Median | 54 ms |
+| Run | Local Response time | Remote Response time |
+|---|---|---|
+| 1 | 48 ms | 129 ms |
+| 2 | 62 ms | 119 ms |
+| 3 | 54 ms | 103 ms |
+| Median | 54 ms | 119 ms |
 
 ## Three known weaknesses
 
