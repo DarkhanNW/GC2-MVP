@@ -167,6 +167,7 @@ function wireSizeSelector(p, soldOut, stock, lowSizes) {
       price: p.price,
       size: selected,
       qty,
+      maxQty: max,
     });
 
     showToast(added > 0
