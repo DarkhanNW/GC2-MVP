@@ -5,7 +5,7 @@ import { getProduct } from "./products-api.js?v=4";
 import { qs, escapeHTML, money, imageFor } from "./ui.js?v=4";
 import { stockState, stockMessage } from "./stock.js?v=4";
 import { BRAND, categoryLabel } from "./catalog.js?v=4";
-import { addToCart, MAX_QTY } from "./cart-store.js?v=4";
+import { addToCart, MAX_QTY } from "./cart-store.js?v=5";
 
 const id = new URLSearchParams(location.search).get("id");
 const root = qs("#detail-root");
