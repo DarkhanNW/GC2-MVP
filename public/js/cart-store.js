@@ -27,15 +27,26 @@ export function addToCart(line) {
   const size = String(line?.size ?? "");
   if (!productId || !size) return { item: null, added: 0 };
 
-  const requested = Math.trunc(Number(line.qty) || 1);
-  const qty = Math.min(MAX_QTY, Math.max(1, requested));
   const existing = cart.find(
     (item) => item?.productId === productId && item?.size === size,
   );
 
+  const rawMax = line?.maxQty == null ? MAX_QTY : Number(line.maxQty);
+  const cap = Number.isFinite(rawMax)
+    ? Math.min(MAX_QTY, Math.max(0, Math.floor(rawMax)))
+    : 0;
+
+  if (cap < 1) return { item: existing ?? null, added: 0 };
+
+  const requested = Math.trunc(Number(line.qty) || 1);
+  const qty = Math.min(cap, Math.max(1, requested));
+
   if (existing) {
     const before = Math.max(0, Number(existing.qty) || 0);
-    const after = Math.min(MAX_QTY, before + qty);
+
+    if (before >= cap) return { item: existing, added: 0 };
+
+    const after = Math.min(cap, before + qty);
     existing.qty = after;
     saveCart(cart);
     return { item: existing, added: after - before };
