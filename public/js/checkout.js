@@ -1,3 +1,4 @@
+import { api } from './api.js';
 
 const CART_KEY = '100yard-cart';
 
