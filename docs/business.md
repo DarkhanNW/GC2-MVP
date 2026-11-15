@@ -39,8 +39,40 @@ _To fill in once the screens exist (owners: M4 for Browse and Select, M5 for Con
 | --- | --- | --- |
 | "Nobody can buy more of a size than we have." | `POST /api/orders` (stock check inside the transaction) | Detail shows "Only N left" or disables the size; if stock ran out meanwhile, Checkout shows which item and size and the order is refused (409) |
 | "Shipping depends on where you live." Fees (ESTIMATES): Metro Manila ₱100, Luzon ₱130, Visayas ₱160, Mindanao ₱180 | `calculateTotals()`, reading `shippingTiers` | Checkout shows the shipping fee for the region they pick before they place the order |
-| "Orders of ₱5000 or more ship free, as our most expensive items are under ₱5000, which means a customer would have to buy at least two items to avail of it." | `calculateTotals()` | Shipping shows FREE; below the line, a hint shows how much more to add |
-| "Up to 3 of one item and size per order, since our stock will be coming in as small imported batches. We don't want scalpers and resellers buying up our stock to flip, but we want to accommodate families or friends buying as agroup." | `POST /api/orders` validation | Quantity control stops at the limit; the server refuses more with 400 |
+| "Orders of ₱5000 or more ship free, as our most expensive items are under ₱5000, which means a customer would have to buy at least two items to avail of it." | `calculateTotals()` | Shipping shows FREE; below the line, a hint shows how much more to add | ### Free-shipping threshold: change locations
+## 4.3 Business rules
+
+| Rule, in plain words | Enforced where (route/function) | What the customer sees when it applies |
+| --- | --- | --- |
+| "Nobody can buy more of a size than we have." | `POST /api/orders` (stock check inside the transaction) | Detail shows "Only N left" or disables the size; if stock ran out meanwhile, Checkout shows which item and size and the order is refused (409) |
+| "Shipping depends on where you live." Fees (ESTIMATES): Metro Manila ₱100, Luzon ₱130, Visayas ₱160, Mindanao ₱180 | `calculateTotals()`, reading `shippingTiers` | Checkout shows the shipping fee for the region they pick before they place the order |
+| "Orders of ₱5,000 or more ship free." | Owner edits `freeShippingMin` on the relevant region documents in MongoDB Atlas (`shippingTiers`). Changes apply to the next order without redeployment. `FREE_SHIPPING_MIN` in `server/seed.js:163` is the default for a fresh database. | Shipping shows FREE when the subtotal reaches the region's threshold; below it, a hint shows how much more to add. Setting `freeShippingMin` to `0` disables free shipping for that region. Rerunning `seed.js` resets all four regions to the default. |
+| "Up to 3 of one item and size per order, since our stock will be coming in as small imported batches. We don't want scalpers and resellers buying up our stock to flip, but we want to accommodate families or friends buying as a group." | `POST /api/orders` validation | Quantity control stops at the limit; the server refuses more with 400 |
+| "We only deliver within the Philippines." | `POST /api/orders` validation (region must be an active tier) | Region is a dropdown of our four regions; anything else is refused with 400 |
+| "If a size is running low, say so." Low-stock mark: 3 units | Product `status` computed in `GET /api/products` and `/:id` | Low Stock badge on List; "Only N left" on Detail |
+| "Prices are ours, not the browser's." | `calculateTotals()` uses database prices only | The total on Confirmation is the server's total, even if the page showed something else |
+
+### Free-shipping threshold: change locations
+
+**Before this PR:**
+- `server/seed.js:164` — Metro Manila
+- `server/seed.js:165` — Luzon
+- `server/seed.js:166` — Visayas
+- `server/seed.js:167` — Mindanao
+
+The four regional shipping-tier objects each contained their own hardcoded `5000` value. Changing the seeded default therefore required editing each region separately.
+
+**After this PR:**
+- `server/seed.js:163` — `const FREE_SHIPPING_MIN = 5000;`
+
+All four seeded regions now reference this shared constant.
+
+**Places the owner can change the threshold:**
+- **Existing database:** MongoDB Atlas → `shippingTiers` collection → edit `freeShippingMin` on the relevant region document. Update all four documents to apply the same threshold across all regions.
+- **Fresh database default:** `server/seed.js:163` — `const FREE_SHIPPING_MIN = 5000;`
+
+**Pull request:** [PR #83](https://github.com/DarkhanNW/GC2-MVP/pull/83)
+| "Up to 3 of one item and size per order, since our stock will be coming in as small imported batches. We don't want scalpers and resellers buying up our stock to flip, but we want to accommodate families or friends buying as a group." | `POST /api/orders` validation | Quantity control stops at the limit; the server refuses more with 400 |
 | "The free-shipping threshold uses one shared default across all regions." | `FREE_SHIPPING_MIN` in `server/seed.js` defines the seeded default; `freeShippingMin` in `server/models/ShippingTier.js` stores the value; `GET /api/shipping-tiers` exposes it; `calculateTotals()` in `server/services/totals.js` applies the stored value | All four seeded regions use the same ₱5,000 threshold |
 | "We only deliver within the Philippines." | `POST /api/orders` validation (region must be an active tier) | Region is a dropdown of our four regions; anything else is refused with 400 |
 | "If a size is running low, say so." Low-stock mark: 3 units | Product `status` computed in `GET /api/products` and `/:id` | Low Stock badge on List; "Only N left" on Detail |
