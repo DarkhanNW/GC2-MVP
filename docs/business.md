@@ -48,7 +48,35 @@ _To fill in once the screens exist (owners: M4 for Browse and Select, M5 for Con
 
 ## 4.4 Revenue features, with a number
 
-_To fill in with our seeded prices (owner: M3). Feature 1: inventory counter. Feature 2: tiered shipping by region with a free-shipping line. Finish each worked example's "so …" with our own reasoning._
+### Feature 1: Inventory Counter
+
+The inventory counter tracks available stock for each product size. Based on our seeded inventory, Sunday Showdown Home Jersey is priced at ₱3,200, with 2 units remaining in size M. The system identifies this as low stock because our threshold is 3 units.
+
+For example, if a customer successfully orders 1 size M jersey:
+
+- Product price: ₱3,200
+- Initial size M stock: 2 units
+- Quantity ordered: 1 unit
+- Remaining size M stock: 1 unit
+- Updated total product stock: 20 units
+
+So, the inventory counter updates stock after a successful order and helps prevent customers from purchasing more units than are available.
+
+### Feature 2: Tiered Shipping by Region
+
+Our shipping fees depend on the customer's delivery region. Metro Manila has a ₱100 fee, Luzon ₱130, Visayas ₱160, and Mindanao ₱180. Orders with a subtotal of ₱5,000 or more qualify for free shipping.
+
+For example, a customer from Metro Manila orders:
+
+- 1 Sunday Showdown Home Jersey: ₱3,200
+- 1 Endzone Pullover Hoodie: ₱2,800
+- Subtotal: ₱6,000
+- Shipping fee: FREE
+- Final order total: ₱6,000
+
+For comparison, purchasing only the jersey would result in a ₱3,200 subtotal plus ₱100 shipping, giving a total of ₱3,300.
+
+So, the free-shipping threshold affects the final amount customers pay, while regional shipping rates determine the additional cost for orders below the threshold.
 
 ## 4.5 What the owner does with the numbers
 

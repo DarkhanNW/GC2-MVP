@@ -1,6 +1,7 @@
 import { escapeHTML, money, imageFor } from "./ui.js?v=4";
 import { statusFor } from "./stock.js?v=4";
 import { BRAND, CATEGORIES, categoryHref } from "./catalog.js?v=4";
+import { cartCount } from "./cart-store.js?v=6";
 
 /* ---------------- chrome ---------------- */
 
@@ -18,6 +19,8 @@ const NAV_LINKS = [
 const isActiveLink = (link, active, category) =>
   link.key === active && (link.cat ?? "") === category;
 
+const cartLabel = (count) => `Cart, ${count} ${count === 1 ? "item" : "items"}`;
+
 export function renderChrome({ active = "", category = "" } = {}) {
   const header = document.querySelector("#site-header");
   const footer = document.querySelector("#site-footer");
@@ -28,10 +31,12 @@ export function renderChrome({ active = "", category = "" } = {}) {
       data-nav-key="${link.key}"
       data-nav-cat="${link.cat ?? ""}"${isActiveLink(link, active, category) ? ' aria-current="page"' : ""}>${link.label}</a>
   `).join("");
+  const count = cartCount();
 
   header.innerHTML = `
     <div class="container site-header__bar">
       <a class="logo" href="index.html"><span class="logo__mark" aria-hidden="true"></span>${BRAND.mark}</a>
+      <a class="cart-btn" href="cart.html" aria-label="${cartLabel(count)}">Cart (<span data-cart-count>${count}</span>)</a>
     </div>
     <nav class="container site-nav" aria-label="Primary">${navHTML}</nav>`;
 
@@ -50,6 +55,7 @@ export function renderChrome({ active = "", category = "" } = {}) {
       <span>© ${new Date().getFullYear()} ${BRAND.name}</span>
       <span>Metro Manila, PH</span>
     </div>`;
+  refreshCartCount();
 }
 
 /* Update only the active nav item; do not rebuild the chrome on every load. */
@@ -60,6 +66,18 @@ export function syncChrome({ active = "", category = "" } = {}) {
     else link.removeAttribute("aria-current");
   });
 }
+
+/* Refresh the header count after a cart mutation or a bfcache restore. */
+export function refreshCartCount() {
+  const count = cartCount();
+  document.querySelectorAll("[data-cart-count]").forEach((node) => {
+    node.textContent = String(count);
+  });
+  document.querySelector(".cart-btn")?.setAttribute("aria-label", cartLabel(count));
+}
+
+window.addEventListener("cart:updated", refreshCartCount);
+window.addEventListener("pageshow", refreshCartCount);
 
 /* ---------------- status ---------------- */
 
