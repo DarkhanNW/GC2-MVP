@@ -37,7 +37,7 @@ Chrome DevTools → Network → Disable cache → reload page.
 
 `localhost:3000/list.html` and `https://one00-yard-apparel.onrender.com/list.html`
 
-`GET /api/products`, measured from the Network tab or Postman.
+`GET /api/products`, measured from DevTools → Network.
 
 | Run | Local Response time | Remote Response time |
 |---|---|---|
