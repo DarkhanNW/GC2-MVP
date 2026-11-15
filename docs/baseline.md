@@ -3,10 +3,12 @@
 Performed on a local server on `localhost:3000`
 
 Date: November 9, 2026 at 9:00 AM
+Commit SHA: 531f086506ad3ec8804593d1d9d95cae120f4339
 
 Reran on the deployed site on `https://one00-yard-apparel.onrender.com`
 
 Date: November 14, 2026 at 12:40 PM
+Commit SHA: 6fa273a445aacbeb9df5a727132bf01be1767395
 
 ## Lighthouse mobile
 
