@@ -46,6 +46,7 @@ test.describe("Home screen", () => {
     await page.goto("/index.html");
 
     await expect(page.locator("#featured-grid .state__title")).toHaveText("Something went wrong");
+    await expect(page.locator("#featured-grid .state")).toContainText("Test API failure");
     await expect(page.locator("#featured-grid [data-retry]")).toBeVisible();
   });
 

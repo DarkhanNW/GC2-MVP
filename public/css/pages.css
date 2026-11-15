@@ -108,6 +108,8 @@
 .detail__price { font-size: var(--fs-xl); font-weight: 800; letter-spacing: -.01em; }
 .detail__price small { font-size: .75rem; font-weight: 500; color: var(--muted); margin-left: 6px; }
 
+.quantity-input { width: 5.5rem; }
+
 .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
 .size-btn {
   min-width: 48px; padding: 8px 12px;
