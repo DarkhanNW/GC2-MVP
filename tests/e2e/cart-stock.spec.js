@@ -19,6 +19,17 @@ async function setupCart(page, stock, qty = 1, apiError = false) {
 
   // Simulate Bryan's Product API.
   await page.route('**/api/products/*', async (route) => {
+    // Deleted or unavailable product.
+    if (apiError === 'not-found') {
+      await route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Product not found' })
+      });
+      return;
+    }
+
+    // Temporary server failure.
     if (apiError) {
       await route.fulfill({
         status: 503,
@@ -28,6 +39,7 @@ async function setupCart(page, stock, qty = 1, apiError = false) {
       return;
     }
 
+    // Successful product response.
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -69,6 +81,41 @@ async function savedQuantity(page) {
 }
 
 test.describe('Cart stock validation - Issue #79', () => {
+
+  // NEW: The main test requested by the PR reviewer.
+  test('Corrects a saved quantity when stock decreases', async ({ page }) => {
+    // Cart saved 3 units, but only 2 remain in stock.
+    await setupCart(page, 2, 3);
+
+    // The original saved quantity stays unchanged.
+    expect(await savedQuantity(page)).toBe(3);
+
+    await expect(page.locator('#cart-items'))
+      .toContainText('Only 2 unit(s) available');
+
+    // Checkout remains blocked.
+    await expect(page.locator('#checkout-button'))
+      .toBeDisabled();
+
+    await expect(page.locator('#subtotal'))
+      .toHaveText('—');
+
+    // Correct the quantity to 2.
+    const quantity = page.locator('input[type="number"]');
+
+    await quantity.fill('2');
+    await quantity.press('Tab');
+
+    await expect(quantity).toHaveValue('2');
+    expect(await savedQuantity(page)).toBe(2);
+
+    // Checkout becomes available again.
+    await expect(page.locator('#subtotal'))
+      .toHaveText('₱2,000.00');
+
+    await expect(page.locator('#checkout-button'))
+      .toBeEnabled();
+  });
 
   test('Rejects quantity 3 when stock is only 2', async ({ page }) => {
     await setupCart(page, 2);
@@ -164,6 +211,33 @@ test.describe('Cart stock validation - Issue #79', () => {
 
     await expect(page.locator('#checkout-button'))
       .toBeDisabled();
+  });
+
+  // NEW: Additional 404 test requested by the reviewer.
+  test('Shows a removal option when a product no longer exists', async ({ page }) => {
+    await setupCart(page, 2, 1, 'not-found');
+
+    // A deleted product should have a special warning.
+    await expect(page.locator('#cart-items'))
+      .toContainText('no longer available');
+
+    // The customer cannot change an unavailable item.
+    await expect(page.locator('input[type="number"]'))
+      .toHaveCount(0);
+
+    // Checkout is blocked.
+    await expect(page.locator('#checkout-button'))
+      .toBeDisabled();
+
+    // The unavailable product can still be removed.
+    await page.getByRole('button', { name: 'Remove' }).click();
+
+    await expect(page.locator('#cart-message'))
+      .toHaveText('Your cart is empty.');
+
+    expect(await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('100yard-cart') || '[]')
+    )).toEqual([]);
   });
 
 });
