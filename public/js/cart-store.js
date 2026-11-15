@@ -63,3 +63,6 @@ export function addToCart(line) {
   saveCart(cart);
   return { item, added: qty };
 }
+export function clearCart() {
+  localStorage.removeItem(CART_KEY);
+}

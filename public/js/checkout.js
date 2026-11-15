@@ -1,6 +1,10 @@
 import { api } from './api.js';
 
-const CART_KEY = '100yard-cart';
+import {
+  getCart,
+  clearCart,
+  MAX_QTY
+} from './cart-store.js?v=5';
 
 const form = document.getElementById('checkout-form');
 const message = document.getElementById('checkout-message');
@@ -19,15 +23,6 @@ let submitting = false;
 let regionsLoaded = false;
 
 // Read the same cart used by Cart #37.
-function getCart() {
-  try {
-    const saved = localStorage.getItem(CART_KEY);
-    const cart = saved ? JSON.parse(saved) : [];
-    return Array.isArray(cart) ? cart : [];
-  } catch {
-    return [];
-  }
-}
 
 // Display prices in Philippine pesos.
 function formatPrice(amount) {
@@ -54,8 +49,9 @@ function validCart(cart) {
     Number(item.price) > 0 &&
     Number.isInteger(Number(item.qty)) &&
     Number(item.qty) >= 1 &&
-    Number(item.qty) <= 3 &&
-    ['S', 'M', 'L', 'XL', 'XXL'].includes(item.size)
+    Number(item.qty) <= MAX_QTY &&
+typeof item.size === 'string' &&
+item.size.trim().length > 0
   );
 }
 
@@ -70,13 +66,27 @@ function renderSummary() {
   orderItems.replaceChildren();
 
   if (!validCart(cart)) {
-    message.textContent = 'Your cart is empty or invalid. Return to Cart.';
-    subtotalElement.textContent = formatPrice(0);
-    shippingElement.textContent = '—';
-    totalElement.textContent = '—';
-    updateButton();
-    return;
-  }
+  form.hidden = true;
+
+  message.textContent = cart.length === 0
+    ? 'Your cart is empty. '
+    : 'Your cart contains invalid items. ';
+
+  const cartLink = document.createElement('a');
+  cartLink.href = 'cart.html';
+  cartLink.textContent = 'Return to Cart';
+
+  message.appendChild(cartLink);
+
+  subtotalElement.textContent = formatPrice(0);
+  shippingElement.textContent = '—';
+  totalElement.textContent = '—';
+
+  updateButton();
+  return;
+}
+
+form.hidden = false;
 
   const subtotal = getSubtotal();
 
@@ -127,9 +137,13 @@ function updateShipping() {
 
 // Retrieve actual regions from the database API.
 async function loadShippingTiers() {
+  if (!validCart(getCart())) {
+    return;
+  }
   message.textContent = 'Loading shipping regions...';
   regionSelect.disabled = true;
   regionSelect.replaceChildren();
+  regionSelect.add(new Option('Loading regions...', ''));
 
   try {
     const data = await api('/api/shipping-tiers');
@@ -149,11 +163,23 @@ async function loadShippingTiers() {
     regionsLoaded = true;
     regionSelect.disabled = false;
     message.textContent = '';
-  } catch (error) {
+    } catch (error) {
     regionsLoaded = false;
+
     message.textContent =
-      error.error || error.message ||
-      'Could not load shipping regions. Please refresh.';
+      (error.error || error.message || 'Could not load shipping regions.') +
+      ' ';
+
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.textContent = 'Retry';
+    retry.addEventListener('click', loadShippingTiers);
+
+    message.appendChild(retry);
+
+    regionSelect.replaceChildren(
+      new Option('Shipping regions unavailable', '')
+    );
   }
 
   updateButton();
@@ -212,35 +238,44 @@ function showFieldError(field, text) {
 }
 
 // Check customer information before sending the request.
+
 function validateCustomer(customer, paymentMethod) {
+  let valid = true;
+
   for (const [field, value] of Object.entries(customer)) {
     if (!value.trim()) {
       showFieldError(field, 'This field is required.');
-      return false;
+      valid = false;
     }
   }
 
-  if (!/^09\d{9}$/.test(customer.mobile)) {
+  if (customer.mobile && !/^09\d{9}$/.test(customer.mobile)) {
     showFieldError('mobile', 'Enter an 11-digit PH mobile number.');
-    return false;
+    valid = false;
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) {
+  if (
+    customer.email &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)
+  ) {
     showFieldError('email', 'Enter a valid email address.');
-    return false;
+    valid = false;
   }
 
-  if (!shippingTiers.some(t => t.region === customer.region)) {
+  if (
+    customer.region &&
+    !shippingTiers.some(t => t.region === customer.region)
+  ) {
     showFieldError('region', 'Select a valid shipping region.');
-    return false;
+    valid = false;
   }
 
   if (!['gcash', 'maya', 'cod'].includes(paymentMethod)) {
     showFieldError('paymentMethod', 'Choose a payment method.');
-    return false;
+    valid = false;
   }
 
-  return true;
+  return valid;
 }
 
 // Submit the order to Rynne's Orders API.
@@ -283,7 +318,6 @@ form.addEventListener('submit', async event => {
   updateButton();
   placeOrderButton.textContent = 'Placing Order...';
   message.textContent = 'Submitting your order...';
-
   try {
     const order = await api('/api/orders', {
       method: 'POST',
@@ -294,7 +328,12 @@ form.addEventListener('submit', async event => {
       throw new Error('The server did not return an order ID.');
     }
 
-    // Confirmation will retrieve the saved order.
+    // Clear the purchased items only after a confirmed success.
+    clearCart();
+
+    // Do not unlock the button after a successful order.
+    message.textContent = 'Order placed! Redirecting...';
+
     window.location.href =
       'confirmation.html?id=' + encodeURIComponent(order._id);
 
@@ -305,17 +344,19 @@ form.addEventListener('submit', async event => {
       error.error || error.message || 'Could not place order.';
 
     if (error.status === 409) {
-  showFieldError('items', 'Insufficient stock: ' + errorText);
-} else if (error.field) {
-  showFieldError(error.field, errorText);
-} else {
-  orderError.textContent = errorText;
-}
-  } finally {
+      showFieldError('items', errorText);
+    } else if (error.field) {
+      showFieldError(error.field, errorText);
+    } else {
+      orderError.textContent = errorText;
+    }
+
+    // Allow another attempt ONLY when submission failed.
     submitting = false;
     placeOrderButton.textContent = 'Place Order';
     updateButton();
   }
+
 });
 
 // Start the checkout page.
