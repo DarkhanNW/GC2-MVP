@@ -22,9 +22,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
 // Feature routes are mounted here as each lane merges them, for example:
-// Feature routes
-app.use('/api/products', require('./routes/products'));
-app.use('/api/orders', require('./routes/orders'));
+// app.use('/api/orders', require('./routes/orders'));           // M3 (POST, GET /:id), M6 (GET /)
 
 // app.use('/api/shipping-tiers', require('./routes/shippingTiers')); // M1
 app.use('/api/shipping-tiers', shippingTierRoutes);
