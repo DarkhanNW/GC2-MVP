@@ -28,8 +28,8 @@ _To fill in once the screens exist (owners: M4 for Browse and Select, M5 for Con
 
 | Stage | Screen | Page elements used, and why those | Endpoint behind it | The number it moves |
 | --- | --- | --- | --- | --- |
-| Browse | List | | `GET /api/products` | Click-through to Detail |
-| Select | Detail, Cart | | `GET /api/products/:id` | Add-to-cart rate |
+| Browse | List | Search field, category chips, sort dropdown, result count, and product cards. These let shoppers narrow the catalog, compare prices, and see availability before opening a product. Cards expose image, name, team, price, and status to support the click into Detail. | `GET /api/products` | Click-through to Detail |
+| Select | Detail, Cart | Detail: image, title, team/category, price, status badge, description, size buttons with stock states, “Only N left,” disabled sold-out sizes, Add to Cart CTA, and toast. Cart: line items, quantity controls, remove action, subtotal, and checkout CTA. These confirm product details, prevent invalid size choices, and let shoppers review/edit before checkout. | `GET /api/products/:id` | Add-to-cart rate |
 | Confirm | Checkout | | `GET /api/shipping-tiers`, `POST /api/orders` | Checkout completion |
 | Save | Confirmation | | `GET /api/orders/:id` | Orders, average order value |
 
