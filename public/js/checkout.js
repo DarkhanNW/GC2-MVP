@@ -163,6 +163,9 @@ async function loadShippingTiers() {
 function clearErrors() {
   orderError.textContent = '';
 
+  const itemError = document.getElementById('items-error');
+  if (itemError) itemError.remove();
+
   [
     'name', 'mobile', 'email', 'street',
     'city', 'province', 'region', 'paymentMethod'
@@ -173,7 +176,33 @@ function clearErrors() {
 
 // Put an error beside its corresponding field.
 function showFieldError(field, text) {
-  const element = document.getElementById(field + '-error');
+  // Convert "customer.mobile" into "mobile".
+  const normalizedField = field?.startsWith('customer.')
+    ? field.slice('customer.'.length)
+    : field;
+
+  // Display product-related errors beside the order items.
+  if (
+    normalizedField === 'items' ||
+    normalizedField?.startsWith('items.')
+  ) {
+    let itemError = document.getElementById('items-error');
+
+    if (!itemError) {
+      itemError = document.createElement('p');
+      itemError.id = 'items-error';
+      itemError.className = 'error error-message';
+      itemError.setAttribute('role', 'alert');
+      orderItems.appendChild(itemError);
+    }
+
+    itemError.textContent = text;
+    return;
+  }
+
+  const element = document.getElementById(
+    normalizedField + '-error'
+  );
 
   if (element) {
     element.textContent = text;
@@ -275,14 +304,13 @@ form.addEventListener('submit', async event => {
     const errorText =
       error.error || error.message || 'Could not place order.';
 
-    if (error.field) {
-      showFieldError(error.field, errorText);
-    } else if (error.status === 409) {
-      orderError.textContent =
-        'Insufficient stock: ' + errorText;
-    } else {
-      orderError.textContent = errorText;
-    }
+    if (error.status === 409) {
+  showFieldError('items', 'Insufficient stock: ' + errorText);
+} else if (error.field) {
+  showFieldError(error.field, errorText);
+} else {
+  orderError.textContent = errorText;
+}
   } finally {
     submitting = false;
     placeOrderButton.textContent = 'Place Order';
