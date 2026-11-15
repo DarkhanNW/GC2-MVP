@@ -40,7 +40,7 @@ export async function installApiMock(page, { mode = "normal", delay = 0 } = {}) 
   await page.route("**/api/products**", async (route) => {
     if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
 
-    if (mode === "error") return json(route, 500, { message: "Test API failure" });
+    if (mode === "error") return json(route, 500, { error: "Test API failure" });
 
     const url = new URL(route.request().url());
     const path = url.pathname.replace(/\/$/, "");
@@ -52,7 +52,7 @@ export async function installApiMock(page, { mode = "normal", delay = 0 } = {}) 
 
     const id = decodeURIComponent(path.slice("/api/products/".length));
     const product = PRODUCTS.find((item) => item._id === id);
-    if (!product) return json(route, 404, { message: "Not found" });
+    if (!product) return json(route, 404, { error: "Product not found" });
     return json(route, 200, product);
   });
 }

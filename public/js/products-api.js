@@ -1,15 +1,11 @@
 import { API_BASE } from "./config.js?v=4";
+import { api } from "./api.js?v=4";
 
 const clean = (obj) =>
   Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== "" && v != null));
 
-async function getJSON(path, { signal } = {}) {
-  const res = await fetch(`${API_BASE}${path}`, { signal });
-  if (!res.ok) {
-    const message = res.status === 404 ? "Not found" : `Request failed (${res.status})`;
-    throw Object.assign(new Error(message), { status: res.status });
-  }
-  return res.json();
+async function getJSON(path, opts = {}) {
+  return api(`${API_BASE}${path}`, opts);
 }
 
 /* ---------- public API ---------- */
@@ -17,7 +13,9 @@ async function getJSON(path, { signal } = {}) {
 export async function getProducts(params = {}, opts = {}) {
   const query = new URLSearchParams(clean(params)).toString();
   const data = await getJSON(`/products${query ? `?${query}` : ""}`, opts);
-  if (!Array.isArray(data)) throw new Error("Unexpected products response");
+  if (!Array.isArray(data)) {
+    throw { status: 200, error: "Unexpected products response" };
+  }
   return data;
 }
 
