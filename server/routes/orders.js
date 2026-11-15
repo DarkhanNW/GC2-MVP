@@ -19,6 +19,15 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+// GET /api/orders: all saved orders for the owner screen, newest first (M6)
+router.get('/', async (req, res, next) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1, _id: -1 }).lean();
+    res.status(200).json(orders);
+  } catch (error) {
+    next(error);
+  }
+});
 router.get('/:id', async (req, res, next) => {
   if (!mongoose.isObjectIdOrHexString(req.params.id)) {
     return res.status(404).json({
