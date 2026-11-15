@@ -12,6 +12,7 @@ let loading = false;
 
 function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  window.dispatchEvent(new Event('cart:updated'));
 }
 
 function formatPrice(price) {
@@ -177,10 +178,17 @@ async function renderCart() {
 
       const quantity = document.createElement('input');
       quantity.type = 'number';
+      quantity.setAttribute(
+  'aria-label',
+  `Quantity for ${item.name}, size ${item.size}`
+);
       quantity.min = '1';
       quantity.max = String(maxAllowed);
       quantity.value = item.qty;
 
+const quantityError = document.createElement('p');
+quantityError.style.color = 'crimson';
+quantityError.setAttribute('role', 'alert');
       quantity.addEventListener('change', () => {
         const newQty = Number(quantity.value);
 
@@ -189,21 +197,32 @@ async function renderCart() {
           newQty < 1 ||
           newQty > maxAllowed
         ) {
-          alert(`Choose a quantity between 1 and ${maxAllowed}.`);
-          quantity.value = item.qty;
-          return;
-        }
+         quantityError.textContent =
+  `Please enter a quantity between 1 and ${maxAllowed}.`;
 
+quantity.value = item.qty;
+return;
+        }
+quantityError.textContent = '';
         updateQuantity(item.productId, item.size, newQty);
       });
 
-      quantityLabel.appendChild(quantity);
-      row.appendChild(quantityLabel);
+     quantityLabel.appendChild(quantity);
+row.appendChild(quantityLabel);
+row.appendChild(quantityError);
     }
 
-    const lineTotal = price * qty;
+  const lineTotal = price * qty;
+const validQuantity =
+  Number.isInteger(qty) &&
+  qty >= 1 &&
+  qty <= maxAllowed;
 
-    if (Number.isFinite(lineTotal) && lineTotal >= 0) {
+if (
+  validQuantity &&
+  Number.isFinite(lineTotal) &&
+  lineTotal >= 0
+) {
       total += lineTotal;
 
       const linePrice = document.createElement('p');
