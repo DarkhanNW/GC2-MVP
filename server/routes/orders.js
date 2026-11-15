@@ -28,6 +28,7 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
+
 router.get('/:id', async (req, res, next) => {
   if (!mongoose.isObjectIdOrHexString(req.params.id)) {
     return res.status(404).json({
