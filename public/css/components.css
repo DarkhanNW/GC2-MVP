@@ -25,6 +25,12 @@
 .logo__mark::before { top: 7px; }
 .logo__mark::after  { bottom: 7px; }
 
+.cart-btn {
+  display: inline-flex; align-items: center;
+  font-size: .875rem; font-weight: 600; white-space: nowrap;
+}
+.cart-btn:hover { text-decoration: underline; }
+
 .site-nav {
   display: flex; gap: var(--s4);
   overflow-x: auto; scrollbar-width: none;
