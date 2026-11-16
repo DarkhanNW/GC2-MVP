@@ -1,5 +1,5 @@
-import { API_BASE } from "./config.js?v=4";
-import { api } from "./api.js?v=4";
+import { API_BASE } from "./config.js";
+import { api } from "./api.js";
 
 const clean = (obj) =>
   Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== "" && v != null));

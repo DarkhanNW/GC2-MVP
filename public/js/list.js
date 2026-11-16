@@ -1,11 +1,11 @@
 import {
   renderChrome, syncChrome, productGrid, skeletonGrid,
   emptyState, errorState,
-} from "./components.js?v=5";
-import { getProducts } from "./products-api.js?v=4";
-import { parseListState, buildListHref } from "./list-url.js?v=4";
-import { categoryById } from "./catalog.js?v=4";
-import { qs, qsa, debounce } from "./ui.js?v=4";
+} from "./components.js";
+import { getProducts } from "./products-api.js";
+import { parseListState, buildListHref } from "./list-url.js";
+import { categoryById } from "./catalog.js";
+import { qs, qsa, debounce } from "./ui.js";
 
 const els = {
   grid: qs("#product-grid"),

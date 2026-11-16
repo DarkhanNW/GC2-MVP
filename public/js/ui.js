@@ -1,6 +1,6 @@
 /* Small shared helpers. No DOM rendering of API data happens without escapeHTML(). */
 
-import { DEFAULT_CURRENCY } from "./catalog.js?v=4";
+import { DEFAULT_CURRENCY } from "./catalog.js";
 
 export const qs  = (sel, root = document) => root.querySelector(sel);
 export const qsa = (sel, root = document) => [...root.querySelectorAll(sel)];

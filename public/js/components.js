@@ -1,7 +1,7 @@
-import { escapeHTML, money, imageFor } from "./ui.js?v=4";
-import { statusFor } from "./stock.js?v=4";
-import { BRAND, CATEGORIES, categoryHref } from "./catalog.js?v=4";
-import { cartCount } from "./cart-store.js?v=6";
+import { escapeHTML, money, imageFor } from "./ui.js";
+import { statusFor } from "./stock.js";
+import { BRAND, CATEGORIES, categoryHref } from "./catalog.js";
+import { cartCount } from "./cart-store.js";
 
 /* ---------------- chrome ---------------- */
 

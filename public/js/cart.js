@@ -1,4 +1,4 @@
-import { renderChrome, refreshCartCount } from './components.js?v=6';
+import { renderChrome, refreshCartCount } from './components.js';
 import { api } from './api.js';
 import { getCart, CART_KEY, MAX_QTY } from './cart-store.js';
 
