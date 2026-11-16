@@ -27,7 +27,7 @@ app.use('/api/orders', require('./routes/orders'));
 // app.use('/api/shipping-tiers', require('./routes/shippingTiers')); // M1
 app.use('/api/shipping-tiers', shippingTierRoutes);
 
-// app.use('/api/metrics', require('./routes/metrics'));         // M6
+app.use('/api/metrics', require('./routes/metrics'));         // M6
 
 // Any /api path that no route handled is a JSON 404, never an HTML page.
 app.use('/api', (req, res) => {
