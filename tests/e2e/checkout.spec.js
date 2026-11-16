@@ -1,4 +1,4 @@
-
+import { collectErrors } from '../helpers/api-stub.js';
 import { test, expect } from '@playwright/test';
 
 const productId = '6650f1000000000000000001';
@@ -73,37 +73,70 @@ async function fillCustomer(page) {
 
 test.describe('Checkout - Issue #38', () => {
 
+  test('Loads Checkout without browser errors', async ({ page }) => {
+  const errors = collectErrors(page);
+
+  await setupCheckout(page);
+
+  await expect(page.locator('#checkout-form')).toBeVisible();
+
+  expect(errors).toEqual([]);
+});
+
+
 
   test('Validates an empty customer form', async ({ page }) => {
     await setupCheckout(page);
 
+    // Submit the empty form only once.
     await page.locator('#place-order').click();
 
-    await expect(page.locator('#name-error'))
-      .toContainText('required');
+    // All required-field errors should appear together.
+    await expect(page.locator('#name-error')).toBeVisible();
+    await expect(page.locator('#mobile-error')).toBeVisible();
+    await expect(page.locator('#email-error')).toBeVisible();
+    await expect(page.locator('#street-error')).toBeVisible();
+    await expect(page.locator('#city-error')).toBeVisible();
+    await expect(page.locator('#province-error')).toBeVisible();
+    await expect(page.locator('#region-error')).toBeVisible();
   });
 
+
+
   test('Shows correct Metro Manila shipping preview', async ({ page }) => {
+    // Start collecting browser errors.
+    const errors = collectErrors(page);
+
     await setupCheckout(page);
 
     await page.locator('#region').selectOption('Metro Manila');
 
+    // Subtotal should be ₱1,000.
     await expect(page.locator('#checkout-subtotal'))
       .toContainText('1,000.00');
 
+    // Metro Manila shipping fee should be ₱100.
     await expect(page.locator('#shipping-fee'))
       .toContainText('100.00');
 
+    // Estimated total should be ₱1,100.
     await expect(page.locator('#checkout-total'))
       .toContainText('1,100.00');
 
+    // Customer should see how much more is needed for free shipping.
     await expect(page.locator('#shipping-hint'))
       .toContainText('Add ₱4,000.00 more');
+
+    // A normal shipping preview should have no browser errors.
+    expect(errors).toEqual([]);
   });
 
 
+
   test('Shows free shipping when subtotal reaches ₱5,000', async ({ page }) => {
-   // Create a test Cart worth ₱5,000.
+    const errors = collectErrors(page);
+
+    // Create a test Cart worth ₱5,000.
     await setupCheckout(page, 5000);
 
     await page.locator('#region').selectOption('Metro Manila');
@@ -119,7 +152,10 @@ test.describe('Checkout - Issue #38', () => {
 
     await expect(page.locator('#shipping-hint'))
       .toBeEmpty();
+
+    expect(errors).toEqual([]);
   });
+
 
   test('Shows Return to Cart when checkout cart is empty', async ({ page }) => {
     // Start Checkout with an empty Cart.
@@ -349,10 +385,25 @@ test.describe('Checkout - Issue #38', () => {
     expect(hasHorizontalOverflow).toBe(false);
   });
 
+
+
   test('Redirects to Confirmation after a successful response', async ({ page }) => {
     const orderId = '6650f2000000000000000002';
+    let orderRequests = 0;
 
+    // Mock the Confirmation page so navigation works during testing.
+    await page.route('**/confirmation.html?*', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!DOCTYPE html><html><body>Confirmation</body></html>'
+      });
+    });
+
+    // Mock a successful order.
     await page.route('**/api/orders', async route => {
+      orderRequests++;
+
       await route.fulfill({
         status: 201,
         contentType: 'application/json',
@@ -363,20 +414,53 @@ test.describe('Checkout - Issue #38', () => {
     await setupCheckout(page);
     await fillCustomer(page);
 
+    // Observe whether Place Order becomes enabled again after submitting.
+    await page.locator('#place-order').evaluate(button => {
+      let submissionStarted = false;
+
+      const observer = new MutationObserver(() => {
+        if (button.disabled && button.textContent.includes('Placing Order')) {
+          submissionStarted = true;
+        }
+
+        if (submissionStarted && !button.disabled) {
+          sessionStorage.setItem('checkout-reenabled-after-submit', 'true');
+        }
+      });
+
+      observer.observe(button, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
+    });
+
+    // Submit the order.
     await page.locator('#place-order').click();
 
+    // Confirm the redirect.
     await expect(page).toHaveURL(
       new RegExp('confirmation\\.html\\?id=' + orderId)
     );
 
-    // Verify that Checkout clears the Cart after a successful order.
+    // Make sure Place Order was not re-enabled after submission started.
+    const reenabled = await page.evaluate(() => {
+      return sessionStorage.getItem('checkout-reenabled-after-submit');
+    });
+
+    expect(reenabled).toBeNull();
+
+    // Make sure only one order request was made.
+    expect(orderRequests).toBe(1);
+
+    // Make sure Checkout cleared the Cart.
     const savedCart = await page.evaluate(() => {
       return localStorage.getItem('100yard-cart');
     });
 
     expect(savedCart === null || JSON.parse(savedCart).length === 0)
       .toBe(true);
-
   });
+
 
 });

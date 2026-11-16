@@ -4,7 +4,7 @@ import {
   getCart,
   clearCart,
   MAX_QTY
-} from './cart-store.js?v=5';
+} from './cart-store.js?v=6';
 
 const form = document.getElementById('checkout-form');
 const message = document.getElementById('checkout-message');
@@ -95,7 +95,7 @@ form.hidden = false;
 
     line.textContent =
       `${item.name} (${item.size}) x ${item.qty} — ` +
-      formatPrice(item.price * item.qty);
+      `Est. ${formatPrice(item.price * item.qty)}`;
 
     orderItems.appendChild(line);
   });
