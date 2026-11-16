@@ -25,7 +25,7 @@ An online store that sources NFL jerseys, hoodies and game-day tops from oversea
 | Database | MongoDB Atlas (free M0 cluster) + Mongoose 8 | GC1 chose MongoDB because product variants (team, size, stock) fit naturally as documents. Atlas runs as a replica set, so we can use transactions to reduce stock in the same operation that saves the order. |
 | Front end | Plain HTML, CSS and JavaScript with `fetch` | GC1 planned React; the Final Project requires it. We start in plain JavaScript so GC2 gives a clear baseline and the React upgrade is a step, not a rewrite. |
 | Hosting | Render (one web service) | Express serves both the API and the `public/` folder from one URL, so there are no cross-origin issues. Free tier is enough for class. |
-| API testing | Postman | Required by the brief; the exported collection lives in `docs/`. |
+| API testing | Postman | Required by the brief; import the [exported collection](docs/postman_collection.json) from `docs/`. |
 
 ## Run it locally
 
