@@ -1,6 +1,8 @@
 import { api } from './api.js';
+import { renderChrome, refreshCartCount } from './components.js?v=5';
+import { CART_KEY } from './cart-store.js?v=?';
 
-const CART_KEY = '100yard-cart';
+renderChrome();
 
 const loadingEl = document.getElementById('loading');
 const errorEl = document.getElementById('error');
@@ -44,6 +46,7 @@ async function loadOrder() {
     }
 
     localStorage.removeItem(CART_KEY);
+    refreshCartCount();
     loadingEl.hidden = true;
     orderEl.hidden = false;
   } catch (err) {
