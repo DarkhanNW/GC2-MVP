@@ -14,19 +14,20 @@ I placed a test order on the deployed website with the Network tab open to trace
 - Quantity: 1
 - Order ID: `6afaeab056981dd1900276a2`
 
+
 ### Network Results
 
 | Detail | Result |
 | --- | --- |
-| Request method | POST |
+| Request method | `POST` |
 | Request URL | `https://one00-yard-apparel.onrender.com/api/orders` |
 | Request body | [See POST Payload screenshot](images/challenge2/c2-post-payload.png) |
-
-| POST status | `201 created` |
+| POST status | `201 Created` |
 | POST response | [See POST Response screenshot](images/challenge2/c2-post-response.png) |
 | Confirmation request | `GET /api/orders/6afaeab056981dd1900276a2` |
-| GET status | 200 OK |
+| GET status | `200 OK` |
 | GET response | Saved order details, including purchased items and final total |
+
 
 ### POST Request Body
 
@@ -135,6 +136,8 @@ It then uses `Product.updateOne()` with `$inc` to decrease the stock of the sele
 
 For this test, one unit of size M was ordered.
 
+The server does not trust product names or prices supplied by the browser. The POST request only includes the product ID, size, and quantity for each item; it does not include `name`, `unitPrice`, or totals. The server retrieves the Product document using `Product.findById()` and copies the current `product.name` and `product.price` into the saved order items. The final subtotal, shipping fee, and total are then calculated on the server using `calculateTotals()`.
+
 **6. Server-side total calculation — `server/services/totals.js`**
 
 After preparing the order items, the POST handler calls `calculateTotals(orderItems, customer.region.trim())`.
@@ -147,6 +150,9 @@ The saved response confirmed:
 - Total: ₱1,350
 
 These totals were calculated on the server rather than relying on the Checkout page's estimated values.
+
+For this test order, the selected shipping region was Metro Manila. The configured shipping tier has a `fee` of ₱100 and a `freeShippingMin` of ₱5,000. Since the Tailgate Graphic Tee subtotal was ₱1,250, which is below the free-shipping threshold, `calculateTotals()` applied the ₱100 fee. This produced a server-calculated total of ₱1,350.
+
 
 **7. Database save — `server/routes/orders.js`**
 
@@ -162,13 +168,16 @@ After the transaction completes, the server returns `res.status(201).json(savedO
 
 Chrome DevTools showed `201 Created` and the saved order with ID `6afaeab056981dd1900276a2`, order number `100Y-20261116-6AFAEAB056981DD1900276A2`, and status `pending`.
 
+
 **9. Checkout redirect — `public/js/checkout.js`**
 
-The Checkout handler receives the response from `api()`. After checking that the returned order contains an `_id`, it calls `clearCart()` and redirects the browser using:
+After the server returns an order with a valid `_id`, the Checkout handler calls `clearCart()`, imported from `public/js/cart-store.js`. This function removes the `100yard-cart` key from localStorage.
+
+The Cart is cleared immediately after the successful POST response. The Checkout handler then redirects the browser using:
 
 `window.location.href = 'confirmation.html?id=' + encodeURIComponent(order._id)`
 
-This sends the customer to Confirmation with the saved order's ID in the URL.
+The Place Order button stays disabled during the successful redirect because `submitting` remains `true`. It is only reset to `false` if submission fails, preventing duplicate orders.
 
 **10. Confirmation request — `public/js/confirmation.js` and `server/routes/orders.js`**
 
@@ -178,15 +187,16 @@ The GET request reaches `router.get('/:id', async (req, res, next) => {...})` in
 
 Chrome DevTools confirmed that `GET /api/orders/6afaeab056981dd1900276a2` returned `200 OK`.
 
+
 **11. Confirmation rendering — `public/js/confirmation.js`**
 
 After receiving the GET response, `loadOrder()` displays the saved order number, subtotal, shipping fee, total, payment method, and purchased items.
 
 It uses `document.getElementById()` to update the page and loops through `order.items` to create the purchased-item entries.
 
-The function also removes the Cart data using `localStorage.removeItem(CART_KEY)`, updates the Cart count with `refreshCartCount()`, hides the loading message, and displays the order details.
+After successfully retrieving the saved order, `loadOrder()` also calls `localStorage.removeItem(CART_KEY)` and updates the Cart count using `refreshCartCount()`. This serves as a backup cleanup if the Confirmation page is opened directly or Checkout did not finish clearing the Cart.
 
-The Confirmation page showed the same product and total as the saved order returned by the server.
+Therefore, both pages perform Cart cleanup, but the main clearing happens in Checkout immediately after the successful POST response.
 
 
 
@@ -197,6 +207,26 @@ The test order was successfully submitted through Checkout on the deployed websi
 The order contained one Tailgate Graphic Tee, size M, priced at ₱1,250, with a ₱100 shipping fee and a final total of ₱1,350. The response included a unique order ID and the status `pending`.
 
 The Confirmation page then sent `GET /api/orders/6afaeab056981dd1900276a2`, which returned `200 OK`. The saved product and total matched the details displayed on the Confirmation page.
+
+
+### Additional Stock Verification
+
+To verify the inventory update performed by `Product.updateOne()`, I conducted a separate test on the deployed website.
+
+I retrieved the product through `GET /api/products/:id` before placing the order and recorded the selected size's available stock. After successfully placing an order for one unit, I requested the same product again.
+
+- Product: Tailgate Graphic Tee
+- Product ID: `6af3d0d667474e20a2db64d2`
+- Size: M
+- Stock before: 7
+- Quantity purchased: 1
+- Stock after: 6
+
+The before-and-after results show that the selected size's available stock decreased by one after the successful order.
+
+![Stock before ordering](images/challenge2/c2-sizemstock-before.png)
+
+![Stock after ordering](images/challenge2/c2-sizemstock-after.png)
 
 
 ### Evidence
