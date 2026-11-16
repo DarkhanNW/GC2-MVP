@@ -1,4 +1,4 @@
-
+import { renderChrome, refreshCartCount } from './components.js?v=6';
 import { api } from './api.js';
 import { getCart, CART_KEY, MAX_QTY } from './cart-store.js';
 
@@ -6,7 +6,6 @@ const cartMessage = document.getElementById('cart-message');
 const cartItems = document.getElementById('cart-items');
 const subtotal = document.getElementById('subtotal');
 const checkoutButton = document.getElementById('checkout-button');
-const cartCount = document.getElementById('cart-count');
 
 let loading = false;
 
@@ -24,12 +23,7 @@ function formatPrice(price) {
 }
 
 function updateCount() {
-  const count = getCart().reduce(
-    (sum, item) => sum + Number(item.qty || 0),
-    0
-  );
-
-  cartCount.textContent = count;
+  refreshCartCount();
 }
 
 function removeItem(productId, size) {
@@ -100,7 +94,7 @@ async function renderCart() {
 
     const updatedCart = getCart();
 
-    results.forEach((result, index) => {
+       results.forEach((result, index) => {
       const item = cart[index];
 
       const currentItem = updatedCart.find(saved =>
@@ -109,10 +103,10 @@ async function renderCart() {
       );
 
       const row = document.createElement('div');
+      row.className = 'cart-item';
 
       const name = document.createElement('h3');
       name.textContent = item.name || 'Product';
-
       const removeButton = document.createElement('button');
       removeButton.textContent = 'Remove';
 
@@ -310,4 +304,8 @@ checkoutButton.addEventListener('click', () => {
   window.location.href = 'checkout.html';
 });
 
+// Display the shared site header, navigation, and footer.
+renderChrome();
+
+// Load and display the Cart.
 renderCart();
