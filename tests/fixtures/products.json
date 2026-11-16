@@ -1,0 +1,131 @@
+[
+  {
+    "_id": "65f000000000000000000001",
+    "name": "Kansas City Chiefs Home Jersey",
+    "slug": "kc-home-jersey",
+    "category": "jerseys",
+    "team": "Kansas City Chiefs",
+    "price": 1899,
+    "description": "Stitched mesh jersey with a tailored athletic cut.",
+    "image": "img/placeholder.svg",
+    "featured": true,
+    "preOrder": false,
+    "sizes": [
+      { "size": "S", "stock": 14 },
+      { "size": "M", "stock": 20 },
+      { "size": "L", "stock": 3 },
+      { "size": "XL", "stock": 0 },
+      { "size": "XXL", "stock": 9 }
+    ],
+    "lowStockAt": 3,
+    "createdAt": "2026-10-28",
+    "status": "low_stock",
+    "totalStock": 46
+  },
+  {
+    "_id": "65f000000000000000000002",
+    "name": "San Francisco 49ers Home Jersey",
+    "slug": "sf-home-jersey",
+    "category": "jerseys",
+    "team": "San Francisco 49ers",
+    "price": 1899,
+    "description": "Classic scarlet home jersey with stitched numbers.",
+    "image": "img/placeholder.svg",
+    "featured": true,
+    "preOrder": false,
+    "sizes": [
+      { "size": "S", "stock": 9 },
+      { "size": "M", "stock": 12 },
+      { "size": "L", "stock": 18 },
+      { "size": "XL", "stock": 5 }
+    ],
+    "lowStockAt": 3,
+    "createdAt": "2026-11-01",
+    "status": "in_stock",
+    "totalStock": 44
+  },
+  {
+    "_id": "65f000000000000000000003",
+    "name": "Bills Sideline Hoodie",
+    "slug": "buf-hoodie",
+    "category": "hoodies",
+    "team": "Buffalo Bills",
+    "price": 2399,
+    "description": "Cozy fleece hoodie with an embroidered team logo.",
+    "image": "img/placeholder.svg",
+    "featured": true,
+    "preOrder": false,
+    "sizes": [
+      { "size": "M", "stock": 9 },
+      { "size": "L", "stock": 15 },
+      { "size": "XL", "stock": 6 }
+    ],
+    "lowStockAt": 3,
+    "createdAt": "2026-10-25",
+    "status": "in_stock",
+    "totalStock": 30
+  },
+  {
+    "_id": "65f000000000000000000004",
+    "name": "Cowboys Colour-Rush Hoodie",
+    "slug": "dal-hoodie",
+    "category": "hoodies",
+    "team": "Dallas Cowboys",
+    "price": 2599,
+    "description": "Colour-rush fleece hoodie with an oversized crest print.",
+    "image": "img/placeholder.svg",
+    "featured": true,
+    "preOrder": false,
+    "sizes": [
+      { "size": "L", "stock": 0 },
+      { "size": "XL", "stock": 0 },
+      { "size": "XXL", "stock": 0 }
+    ],
+    "lowStockAt": 3,
+    "createdAt": "2026-09-30",
+    "status": "sold_out",
+    "totalStock": 0
+  },
+  {
+    "_id": "65f000000000000000000005",
+    "name": "Dolphins Aqua Tee",
+    "slug": "mia-tee",
+    "category": "tees",
+    "team": "Miami Dolphins",
+    "price": 1199,
+    "description": "Breathable aqua tee with the classic Dolphins logo.",
+    "image": "img/placeholder.svg",
+    "featured": true,
+    "preOrder": true,
+    "sizes": [
+      { "size": "S", "stock": 8 },
+      { "size": "M", "stock": 10 },
+      { "size": "L", "stock": 6 }
+    ],
+    "lowStockAt": 3,
+    "createdAt": "2026-11-02",
+    "status": "pre_order",
+    "totalStock": 24
+  },
+  {
+    "_id": "65f000000000000000000006",
+    "name": "Raiders Blackout Hoodie",
+    "slug": "lv-hoodie",
+    "category": "hoodies",
+    "team": "Las Vegas Raiders",
+    "price": 2299,
+    "description": "All-black hoodie with a subtle silver crest.",
+    "image": "img/placeholder.svg",
+    "featured": true,
+    "preOrder": false,
+    "sizes": [
+      { "size": "M", "stock": 2 },
+      { "size": "L", "stock": 0 },
+      { "size": "XL", "stock": 1 }
+    ],
+    "lowStockAt": 3,
+    "createdAt": "2026-09-12",
+    "status": "low_stock",
+    "totalStock": 3
+  }
+]

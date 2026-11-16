@@ -1,0 +1,251 @@
+{
+  "info": {
+    "_postman_id": "95a32df4-2e90-4ab9-87a2-7493bdc0430a",
+    "name": "100-Yard Apparel API",
+    "description": "Requests for every documented API route. The Challenge 1 folder contains a six-request browse-to-order flow. Set baseUrl to the deployed API before taking Challenge 1 screenshots. POST /api/orders creates an order and reduces inventory; use a test database when running locally.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Challenge 1 - six API requests",
+      "description": "Run in order after the product catalog is seeded. The first three requests set productId, size, and region for the order request.",
+      "item": [
+        {
+          "name": "1. List products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                { "key": "q", "value": "steelers", "disabled": true },
+                { "key": "category", "value": "jerseys", "disabled": true },
+                { "key": "sort", "value": "price_asc", "disabled": true }
+              ]
+            },
+            "description": "Lists products. Optional query parameters are included disabled as examples."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns a product list', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "var products = pm.response.json();",
+                  "var availableProduct = products.find(function (product) { return product.totalStock > 0; });",
+                  "if (availableProduct) {",
+                  "  pm.collectionVariables.set('productId', availableProduct._id);",
+                  "} else {",
+                  "  throw new Error('No products with available stock were returned. Seed the catalog or choose a productId.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Get product details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{productId}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns product details', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var product = pm.response.json();",
+                  "var availableSize = (product.sizes || []).find(function (entry) { return entry.stock > 0; });",
+                  "if (availableSize) {",
+                  "  pm.collectionVariables.set('size', availableSize.size);",
+                  "} else {",
+                  "  throw new Error('The selected product has no available sizes. Choose another productId.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Get shipping tiers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shipping-tiers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shipping-tiers"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns active shipping tiers', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "var tiers = pm.response.json();",
+                  "if (tiers.length > 0) {",
+                  "  pm.collectionVariables.set('region', tiers[0].region);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Create an order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": {\n    \"name\": \"Postman Test\",\n    \"mobile\": \"09171234567\",\n    \"email\": \"postman-test@example.com\",\n    \"street\": \"123 Test Street\",\n    \"city\": \"Quezon City\",\n    \"province\": \"Metro Manila\",\n    \"region\": \"{{region}}\"\n  },\n  \"items\": [\n    { \"productId\": \"{{productId}}\", \"size\": \"{{size}}\", \"qty\": 1 }\n  ],\n  \"paymentMethod\": \"gcash\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Creates an order and reduces stock. Run only against an appropriate test database or with the team's approval on the deployed API."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('creates an order', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var order = pm.response.json();",
+                  "if (order._id) {",
+                  "  pm.collectionVariables.set('orderId', order._id);",
+                  "} else {",
+                  "  throw new Error('The response did not include the saved order _id.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Get the created order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns the saved order', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json()._id).to.eql(pm.collectionVariables.get('orderId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. List orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns the order list', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Other documented routes",
+      "item": [
+        {
+          "name": "Get API health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/metrics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "metrics"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "productId", "value": "" },
+    { "key": "size", "value": "" },
+    { "key": "region", "value": "Metro Manila" },
+    { "key": "orderId", "value": "" }
+  ]
+}
