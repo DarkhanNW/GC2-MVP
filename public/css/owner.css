@@ -1,0 +1,28 @@
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+@media (min-width: 900px) {
+  .metric-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+.metric {
+  background: white;
+  border: 1px solid #e3e0d6;
+  border-radius: 10px;
+  padding: 16px;
+}
+.metric__label { font-size: 0.75rem; font-weight: bold; color: #6b7268; }
+.metric__value { font-size: 1.25rem; font-weight: bold; margin-top: 4px; }
+.metric__note { font-size: 0.8rem; color: #6b7268; margin-top: 4px; }
+
+.owner-heading { margin: 32px 0 12px; }
+
+/* The table can scroll sideways on a phone. */
+.table-wrap { overflow-x: auto; background: white; border: 1px solid #e3e0d6; border-radius: 10px; }
+.orders-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 640px; }
+.orders-table th, .orders-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e3e0d6; vertical-align: top; }
+
+
