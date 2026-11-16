@@ -1,9 +1,26 @@
 const mongoose = require('mongoose');
-const shippingSchema = new mongoose.Schema({
-    region: { type: String, required: true, unique: true, enum: ['Metro Manila', 'Luzon', 'Visayas', 'Mindanao'], trim: true},
-    fee: { type: Number, required: true, min: 0 },
-    freeShippingMin: { type: Number, default: 0, min: 0 },
-    active: { type: Boolean , default: true },
-});
 
-module.exports = mongoose.model('ShippingTier', shippingSchema, 'shippingTiers');
+const shippingTierSchema = new mongoose.Schema(
+  {
+    region: {
+      type: String,
+      enum: ['Metro Manila', 'Luzon', 'Visayas', 'Mindanao'],
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    fee: { type: Number, min: 0, validate: Number.isInteger, required: true },
+    freeShippingMin: {
+      type: Number,
+      min: 0,
+      validate: Number.isInteger,
+      required: true,
+    },
+    active: { type: Boolean, default: true },
+  },
+  { collection: 'shippingTiers' }
+);
+
+module.exports =
+  mongoose.models.ShippingTier ||
+  mongoose.model('ShippingTier', shippingTierSchema);
