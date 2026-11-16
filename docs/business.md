@@ -80,12 +80,10 @@ So, the free-shipping threshold affects the final amount customers pay, while re
 
 ## 4.5 What the owner does with the numbers
 
-_To fill in once the owner screen works (owner: M6). One decision per number._
-
 | Number | Value from our data | Decision it supports |
 | --- | --- | --- |
-| Number of orders | | |
-| Total revenue | | |
-| Average order value | | |
-| Top-selling item | | |
-| Items low on stock | | |
+| Number of orders | 2 | As we only have 2 orders for the business, it is far below the justification on buying a full batch overseas, and so we will post materials on our best-sold products on Tiktok Shop and Instagram, waiting for 10 lor more orders before deciding to restock. |
+| Total revenue | ₱4,680 | |
+| Average order value | ₱2,340 | |
+| Top-selling item | Sunday Showdown Home Jersey (1 sold) | |
+| Items low on stock | 17 sizes at or below 3; 2 sold out (Cold Front Fleece Hoodie M, Midnight Alternate Jersey M) |
