@@ -13,10 +13,15 @@ function readCart() {
 
 function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  window.dispatchEvent(new CustomEvent("cart:updated"));
 }
 
 export function getCart() {
   return readCart();
+}
+
+export function cartCount() {
+  return readCart().reduce((total, item) => total + (Number(item.qty) || 0), 0);
 }
 
 /* Add a line using M5's cart contract. Returns the stored line and the number
