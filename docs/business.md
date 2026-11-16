@@ -24,14 +24,14 @@
 
 ## 4.2 Funnel map
 
-_To fill in once the screens exist (owners: M4 for Browse and Select, M5 for Confirm and Save). For each element, say why it is the right one for the job._
-
 | Stage | Screen | Page elements used, and why those | Endpoint behind it | The number it moves |
 | --- | --- | --- | --- | --- |
 | Browse | List | Search field, category chips, sort dropdown, result count, and product cards. These let shoppers narrow the catalog, compare prices, and see availability before opening a product. Cards expose image, name, team, price, and status to support the click into Detail. | `GET /api/products` | Click-through to Detail |
 | Select | Detail, Cart | Detail: image, title, team/category, price, status badge, description, size buttons with stock states, “Only N left,” disabled sold-out sizes, Add to Cart CTA, and toast. Cart: line items, quantity controls, remove action, subtotal, and checkout CTA. These confirm product details, prevent invalid size choices, and let shoppers review/edit before checkout. | `GET /api/products/:id` | Add-to-cart rate |
-| Confirm | Checkout | | `GET /api/shipping-tiers`, `POST /api/orders` | Checkout completion |
-| Save | Confirmation | | `GET /api/orders/:id` | Orders, average order value |
+
+| Confirm | Checkout | Customers enter their name, contact details, and address. Error messages appear beside missing/incorrect information, such as an invalid mobile number, so customers know what to fix. A dropdown is used for shipping regions instead of a textbox to prevent unsupported locations. The order summary shows the estimated total and shipping fee before placing an order. Customers can also choose Gcash, Maya, or COD as a simulated payment method. The “Place Order” button is disabled while the order is being submitted to prevent double orders | `GET /api/shipping-tiers` gets the shipping regions and fees. `POST /api/orders` checks the information, product availability, and payment choice before saving the order. | Checkout completion rate - how many customers successfully place an order out of those who reach Checkout.
+| Save | Confirmation | After placing an order, customers see their order number, purchased items, and final total. For example: they can check that the current jersey size and quantity were saved. The page shows the order saved in the database instead of just repeating the estimated Checkout total. The Cart is also cleared after a successful order so customers don’t accidentally buy the same items again.  | `GET /api/orders/:id` retrieves the saved order for the Confirmation page. | Completed orders and average order value (AOV) - the number of orders saved and the average amount spent per order. |
+
 
 ## 4.3 Business rules
 
