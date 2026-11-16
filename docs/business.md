@@ -79,11 +79,12 @@ For comparison, purchasing only the jersey would result in a ₱3,200 subtotal p
 So, the free-shipping threshold affects the final amount customers pay, while regional shipping rates determine the additional cost for orders below the threshold.
 
 ## 4.5 What the owner does with the numbers
+Values are from our test orders (MVP, no real sales yet)
 
 | Number | Value from our data | Decision it supports |
 | --- | --- | --- |
-| Number of orders | 2 | As we only have 2 orders for the business, it is far below the justification on buying a full batch overseas, and so we will post materials on our best-sold products on Tiktok Shop and Instagram, waiting for 10 lor more orders before deciding to restock. |
-| Total revenue | ₱4,680 | |
-| Average order value | ₱2,340 | |
-| Top-selling item | Sunday Showdown Home Jersey (1 sold) | |
-| Items low on stock | 17 sizes at or below 3; 2 sold out (Cold Front Fleece Hoodie M, Midnight Alternate Jersey M) |
+| Number of orders | 2 | When orders in a week are below 10, as this indicates a low threshold being below the number of unique products,  the owner will post products of choice to promote in related media, like Tiktok and Instagram, as our GC1 target market (18-34, Shopee/IG/Tiktok shoppers), already use these.  |
+| Total revenue | ₱4,680 | When revenue since the last restock reaches the total price of 1 QTY ordered per product or more, in this case ₱25,290.00, the owner places the next overseas order, because this ensures that the business has generated sufficient sales to cover the cost of replacing initial product assortment, whilst keeping capital expenditures low. |
+| Average order value | ₱2,340 | When average order value stays below ₱5,000, the owner places an option for a number of units for free shipping at checkout, because our free shipping quota is ₱5,000. | 
+| Top-selling item | Sunday Showdown Home Jersey (1 sold) | When one item sells 3 units or more within a restocking cycle, the owner prioritizes its' restocking as the 3-per-purchase limit indicates sufficient customer demand if demand for the product is 3 or more. (indicates full-purchase, or purchases between multiple customers sufficiently) |
+| Items low on stock | 17 sizes at or below 3; 2 sold out as our test order (MVP) (Cold Front Fleece Hoodie M, Midnight Alternate Jersey M) | When a size reaches our low-stock mark of 3, the owner reorders due to our small order batches. 
