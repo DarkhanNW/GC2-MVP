@@ -4,7 +4,7 @@ import {
   getCart,
   clearCart,
   MAX_QTY
-} from './cart-store.js?v=6';
+} from './cart-store.js';
 
 const form = document.getElementById('checkout-form');
 const message = document.getElementById('checkout-message');

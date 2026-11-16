@@ -1,6 +1,6 @@
 import { api } from './api.js';
-import { renderChrome, refreshCartCount } from './components.js?v=5';
-import { CART_KEY } from './cart-store.js?v=?';
+import { renderChrome, refreshCartCount } from './components.js';
+import { CART_KEY } from './cart-store.js';
 
 renderChrome();
 

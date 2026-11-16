@@ -1,7 +1,7 @@
-import { renderChrome, productGrid, skeletonGrid, emptyState, errorState } from "./components.js?v=5";
-import { getFeatured } from "./products-api.js?v=4";
-import { qs, qsa } from "./ui.js?v=4";
-import { categoryById, categoryHref } from "./catalog.js?v=4";
+import { renderChrome, productGrid, skeletonGrid, emptyState, errorState } from "./components.js";
+import { getFeatured } from "./products-api.js";
+import { qs, qsa } from "./ui.js";
+import { categoryById, categoryHref } from "./catalog.js";
 
 qsa(".tile[data-category]").forEach((tile) => {
   const category = categoryById(tile.dataset.category);

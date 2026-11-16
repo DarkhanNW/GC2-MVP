@@ -1,6 +1,6 @@
 import { api } from "./api.js";
-import { renderChrome, emptyState, errorState } from "./components.js?v=4";
-import { qs, money, escapeHTML } from "./ui.js?v=4";
+import { renderChrome, emptyState, errorState } from "./components.js";
+import { qs, money, escapeHTML } from "./ui.js";
 
 // Show the site header and footer.
 renderChrome({ active: "owner" });
