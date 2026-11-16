@@ -24,14 +24,13 @@
 
 ## 4.2 Funnel map
 
-_To fill in once the screens exist (owners: M4 for Browse and Select, M5 for Confirm and Save). For each element, say why it is the right one for the job._
-
 | Stage | Screen | Page elements used, and why those | Endpoint behind it | The number it moves |
 | --- | --- | --- | --- | --- |
 | Browse | List | Search field, category chips, sort dropdown, result count, and product cards. These let shoppers narrow the catalog, compare prices, and see availability before opening a product. Cards expose image, name, team, price, and status to support the click into Detail. | `GET /api/products` | Click-through to Detail |
 | Select | Detail, Cart | Detail: image, title, team/category, price, status badge, description, size buttons with stock states, “Only N left,” disabled sold-out sizes, Add to Cart CTA, and toast. Cart: line items, quantity controls, remove action, subtotal, and checkout CTA. These confirm product details, prevent invalid size choices, and let shoppers review/edit before checkout. | `GET /api/products/:id` | Add-to-cart rate |
-| Confirm | Checkout | | `GET /api/shipping-tiers`, `POST /api/orders` | Checkout completion |
-| Save | Confirmation | | `GET /api/orders/:id` | Orders, average order value |
+| Confirm | Checkout (`checkout.html`) | The customer form collects delivery and contact details, while inline validation messages show which fields need correction. A region dropdown prevents unsupported shipping locations. The order summary shows the estimated product subtotal, shipping fee, and total before purchase. Shipping becomes free (₱0) when the subtotal reaches the selected region's `freeShippingMin` threshold. Customers can choose simulated GCash, Maya, or COD payment. The Place Order button is disabled during submission to prevent duplicate requests. | `GET /api/shipping-tiers` retrieves shipping regions, fees, and free-shipping thresholds. `POST /api/orders` validates customer information, items, and payment method; retrieves current product prices from MongoDB; checks and reduces stock in a transaction; and recalculates the final total using `calculateTotals()`. If there is insufficient stock, the server rejects the request with `409 Conflict`, preventing overselling. | Checkout completion rate — the proportion of customers reaching Checkout who successfully place an order. |
+| Save | Confirmation (`confirmation.html`) | The page retrieves and displays the saved order number, purchased products, sizes, quantities, and server-confirmed subtotal, shipping fee, and total. Customers can verify that their order was saved correctly rather than relying on the estimated Checkout total. The Cart is cleared after successful submission to prevent previously purchased items from remaining in it. | `POST /api/orders` creates the order in MongoDB and returns `201 Created`. `GET /api/orders/:id` retrieves the saved order for display on Confirmation. | Completed orders — the number of orders successfully saved. Average order value (AOV) — the average final saved order `total`, including shipping, consistent with `GET /api/metrics`. |
+
 
 ## 4.3 Business rules
 
