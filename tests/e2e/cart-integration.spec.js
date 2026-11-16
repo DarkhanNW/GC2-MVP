@@ -72,7 +72,7 @@ test.describe("Cart integration", () => {
 
     await expect(page).toHaveURL(/\/cart\.html$/);
     await expect(page.locator("#cart-items")).toContainText(product.name);
-    await expect(page.locator("#cart-count")).toHaveText("1");
+    await expect(page.locator("[data-cart-count]")).toHaveText("1");
   });
 
   test("refreshes the count when the page is restored", async ({ page }) => {
