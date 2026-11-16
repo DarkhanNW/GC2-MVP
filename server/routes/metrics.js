@@ -30,7 +30,7 @@ router.get('/', async (req, res, next) => {
       ]),
       Product.aggregate([
         { $unwind: '$sizes' },
-        // Includes sizes at 0 on purpose: the owner needs to see sold-out sizes to restock.
+        // Includes sizes at 0 on purpose: to check stock for reordering. 
         { $match: { $expr: { $lte: ['$sizes.stock', '$lowStockAt'] } } },        
         {
           $project: {
