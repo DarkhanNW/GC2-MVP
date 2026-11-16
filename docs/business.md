@@ -24,26 +24,46 @@
 
 ## 4.2 Funnel map
 
-_To fill in once the screens exist (owners: M4 for Browse and Select, M5 for Confirm and Save). For each element, say why it is the right one for the job._
-
 | Stage | Screen | Page elements used, and why those | Endpoint behind it | The number it moves |
 | --- | --- | --- | --- | --- |
 | Browse | List | Search field, category chips, sort dropdown, result count, and product cards. These let shoppers narrow the catalog, compare prices, and see availability before opening a product. Cards expose image, name, team, price, and status to support the click into Detail. | `GET /api/products` | Click-through to Detail |
 | Select | Detail, Cart | Detail: image, title, team/category, price, status badge, description, size buttons with stock states, “Only N left,” disabled sold-out sizes, Add to Cart CTA, and toast. Cart: line items, quantity controls, remove action, subtotal, and checkout CTA. These confirm product details, prevent invalid size choices, and let shoppers review/edit before checkout. | `GET /api/products/:id` | Add-to-cart rate |
-| Confirm | Checkout | | `GET /api/shipping-tiers`, `POST /api/orders` | Checkout completion |
-| Save | Confirmation | | `GET /api/orders/:id` | Orders, average order value |
+| Confirm | Checkout (`checkout.html`) | The customer form collects delivery and contact details, while inline validation messages show which fields need correction. A region dropdown prevents unsupported shipping locations. The order summary shows the estimated product subtotal, shipping fee, and total before purchase. Shipping becomes free (₱0) when the subtotal reaches the selected region's `freeShippingMin` threshold. Customers can choose simulated GCash, Maya, or COD payment. The Place Order button is disabled during submission to prevent duplicate requests. | `GET /api/shipping-tiers` retrieves shipping regions, fees, and free-shipping thresholds. `POST /api/orders` validates customer information, items, and payment method; retrieves current product prices from MongoDB; checks and reduces stock in a transaction; and recalculates the final total using `calculateTotals()`. If there is insufficient stock, the server rejects the request with `409 Conflict`, preventing overselling. | Checkout completion rate — the proportion of customers reaching Checkout who successfully place an order. |
+| Save | Confirmation (`confirmation.html`) | The page retrieves and displays the saved order number, purchased products, sizes, quantities, and server-confirmed subtotal, shipping fee, and total. Customers can verify that their order was saved correctly rather than relying on the estimated Checkout total. The Cart is cleared after successful submission to prevent previously purchased items from remaining in it. | `POST /api/orders` creates the order in MongoDB and returns `201 Created`. `GET /api/orders/:id` retrieves the saved order for display on Confirmation. | Completed orders — the number of orders successfully saved. Average order value (AOV) — the average final saved order `total`, including shipping, consistent with `GET /api/metrics`. |
+
 
 ## 4.3 Business rules
 
-| Rule, in plain words | Enforced where (route/function) | What the customer sees when it applies |
-| --- | --- | --- |
-| "Nobody can buy more of a size than we have." | `POST /api/orders` (stock check inside the transaction) | Detail shows "Only N left" or disables the size; if stock ran out meanwhile, Checkout shows which item and size and the order is refused (409) |
-| "Shipping depends on where you live." Fees (ESTIMATES): Metro Manila ₱100, Luzon ₱130, Visayas ₱160, Mindanao ₱180 | `calculateTotals()`, reading `shippingTiers` | Checkout shows the shipping fee for the region they pick before they place the order |
-| "Orders of ₱5000 or more ship free, as our most expensive items are under ₱5000, which means a customer would have to buy at least two items to avail of it." | `calculateTotals()` | Shipping shows FREE; below the line, a hint shows how much more to add |
-| "Up to 3 of one item and size per order, since our stock will be coming in as small imported batches. We don't want scalpers and resellers buying up our stock to flip, but we want to accommodate families or friends buying as a group." | `POST /api/orders` validation | Quantity control stops at the limit; the server refuses more with 400 |
-| "We only deliver within the Philippines." | `POST /api/orders` validation (region must be an active tier) | Region is a dropdown of our four regions; anything else is refused with 400 |
-| "If a size is running low, say so." Low-stock mark: 3 units | Product `status` computed in `GET /api/products` and `/:id` | Low Stock badge on List; "Only N left" on Detail |
-| "Prices are ours, not the browser's." | `calculateTotals()` uses database prices only | The total on Confirmation is the server's total, even if the page showed something else |
+| Business rule | Reason | Enforced where (route/function) | What the customer sees when it applies |
+| --- | --- | --- | --- |
+| Nobody can buy more of a size than we have. | — | `POST /api/orders` (stock check inside the transaction) | Detail shows "Only N left" or disables the size; if stock ran out meanwhile, Checkout shows which item and size and the order is refused (409) |
+| Shipping depends on where you live. Fees (ESTIMATES): Metro Manila ₱100, Luzon ₱130, Visayas ₱160, Mindanao ₱180. | — | `calculateTotals()`, reading `shippingTiers` | Checkout shows the shipping fee for the region they pick before they place the order |
+| Free shipping for orders with a subtotal of at least ₱5,000. | Most expensive individual items are below ₱5,000, encouraging customers to purchase at least two items to qualify. | `calculateTotals()` reads `freeShippingMin` from the shipping-tier document. | Shipping shows FREE; below the line, a hint shows how much more to add |
+| Up to 3 of one item and size per order. | Stock arrives in small imported batches; this limits scalpers while accommodating families or friends buying as a group. | `POST /api/orders` validation | Quantity control stops at the limit; the server refuses more with 400 |
+| We only deliver within the Philippines. | — | `POST /api/orders` validation (region must be an active tier) | Region is a dropdown of our four regions; anything else is refused with 400 |
+| If a size is running low, say so. Low-stock mark: 3 units. | — | Product `status` computed in `GET /api/products` and `/:id` | Low Stock badge on List; "Only N left" on Detail |
+| Prices are ours, not the browser's. | — | `calculateTotals()` uses database prices only | The total on Confirmation is the server's total, even if the page showed something else |
+
+### Free-shipping threshold: change locations
+
+The owner can change the free-shipping threshold by editing the `freeShippingMin` value on the relevant documents in the MongoDB Atlas `shippingTiers` collection. The change applies to the next order without requiring a redeployment.
+
+The `FREE_SHIPPING_MIN` constant in `server/seed.js` (line 163) provides the default threshold of ₱5,000 when creating a fresh database. Rerunning `seed.js` resets all four region documents to this default, so it should not be rerun just to change the threshold in an existing database.
+
+Setting `freeShippingMin` to `0` disables free shipping for that region.
+
+**Before this PR:** The ₱5,000 threshold was hardcoded separately in `server/seed.js`:
+
+- `server/seed.js:164` — Metro Manila
+- `server/seed.js:165` — Luzon
+- `server/seed.js:166` — Visayas
+- `server/seed.js:167` — Mindanao
+
+**After this PR:** The four region entries use one shared default:
+
+- `server/seed.js:163` — `const FREE_SHIPPING_MIN = 5000;`
+
+See [PR #83 – Centralize Free Shipping Threshold](https://github.com/DarkhanNW/GC2-MVP/pull/83).
 
 
 ## 4.4 Revenue features, with a number
@@ -79,13 +99,12 @@ For comparison, purchasing only the jersey would result in a ₱3,200 subtotal p
 So, the free-shipping threshold affects the final amount customers pay, while regional shipping rates determine the additional cost for orders below the threshold.
 
 ## 4.5 What the owner does with the numbers
-
-_To fill in once the owner screen works (owner: M6). One decision per number._
+Values are from our test orders (MVP, no real sales yet)
 
 | Number | Value from our data | Decision it supports |
 | --- | --- | --- |
-| Number of orders | | |
-| Total revenue | | |
-| Average order value | | |
-| Top-selling item | | |
-| Items low on stock | | |
+| Number of orders | 2 | When orders in a week are below 10, as this indicates a low threshold being below the number of unique products,  the owner will post products of choice to promote in related media, like Tiktok and Instagram, as our GC1 target market (18-34, Shopee/IG/Tiktok shoppers), already use these.  |
+| Total revenue | ₱4,680 | When revenue since the last restock reaches the total price of 1 QTY ordered per product or more, in this case ₱25,290.00, the owner places the next overseas order, because this ensures that the business has generated sufficient sales to cover the cost of replacing initial product assortment, whilst keeping capital expenditures low. |
+| Average order value | ₱2,340 | When average order value stays below ₱5,000, the owner places an option for a number of units for free shipping at checkout, because our free shipping quota is ₱5,000. | 
+| Top-selling item | Sunday Showdown Home Jersey (1 sold) | When one item sells 3 units or more within a restocking cycle, the owner prioritizes its' restocking as the 3-per-purchase limit indicates sufficient customer demand if demand for the product is 3 or more. (indicates full-purchase, or purchases between multiple customers sufficiently) |
+| Items low on stock | 17 sizes at or below 3; 2 sold out as our test order (MVP) (Cold Front Fleece Hoodie M, Midnight Alternate Jersey M) | When a size reaches our low-stock mark of 3, the owner reorders due to our small order batches. 

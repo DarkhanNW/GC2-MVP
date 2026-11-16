@@ -160,11 +160,13 @@ const products = [
   },
 ];
 
+const FREE_SHIPPING_MIN = 5000;
+
 const shippingTiers = [
-  { region: 'Metro Manila', fee: 100, freeShippingMin: 5000, active: true },
-  { region: 'Luzon', fee: 130, freeShippingMin: 5000, active: true },
-  { region: 'Visayas', fee: 160, freeShippingMin: 5000, active: true },
-  { region: 'Mindanao', fee: 180, freeShippingMin: 5000, active: true },
+  { region: 'Metro Manila', fee: 100, freeShippingMin: FREE_SHIPPING_MIN, active: true },
+  { region: 'Luzon', fee: 130, freeShippingMin: FREE_SHIPPING_MIN, active: true },
+  { region: 'Visayas', fee: 160, freeShippingMin: FREE_SHIPPING_MIN, active: true },
+  { region: 'Mindanao', fee: 180, freeShippingMin: FREE_SHIPPING_MIN, active: true },
 ];
 
 async function seed() {
