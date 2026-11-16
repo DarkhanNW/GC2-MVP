@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Confirmed | 100-Yard Apparel</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
 </head>
 <body>
   <main>
@@ -17,15 +20,14 @@
         <h1>Thanks for shopping with us! A summary of your order:</h1>
         <p id="order-no"></p>
         <ol id="items"></ol>
-        <p>Subtotal: ₱<span id="subtotal"></span></p>
-        <p id="shipping"></p>
-        <p id="total"></p>
-        <p id="payment"></p>
+        <p>Subtotal: <span id="subtotal"></span></p>
+        <p>Shipping: <span id="shipping"></span></p>
+        <p>Total: <span id="total"></span></p>
+        <p>Payment: <span id="payment"></span></p>
     </div>
 
   </main>
 
-  <script src="js/api.js"></script>
-  <script src="js/confirmation.js"></script>
+  <script type="module" src="js/confirmation.js"></script>.
 </body>
 </html>

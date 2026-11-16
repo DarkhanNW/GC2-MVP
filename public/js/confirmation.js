@@ -1,3 +1,5 @@
+import { api } from './api.js';
+
 const CART_KEY = '100yard-cart';
 
 const loadingEl = document.getElementById('loading');
@@ -28,12 +30,10 @@ async function loadOrder() {
     const order = await api('/api/orders/' + encodeURIComponent(id));
 
     document.getElementById('order-no').textContent = 'Order #' + order.orderNo;
-    document.getElementById('subtotal').textContent = 'Subtotal: ' + peso(order.subtotal);
-    document.getElementById('shipping').textContent =
-      'Shipping: ' + (order.shippingFee === 0 ? 'FREE' : peso(order.shippingFee));
-    document.getElementById('total').textContent = 'Total: ' + peso(order.total);
-    document.getElementById('payment').textContent =
-      'Payment: ' + (PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod);
+    document.getElementById('subtotal').textContent = peso(order.subtotal);
+    document.getElementById('shipping').textContent = (order.shippingFee === 0 ? 'FREE' : peso(order.shippingFee));
+    document.getElementById('total').textContent = peso(order.total);
+    document.getElementById('payment').textContent = (PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod);
 
     const list = document.getElementById('items');
     list.replaceChildren();
@@ -47,6 +47,7 @@ async function loadOrder() {
     loadingEl.hidden = true;
     orderEl.hidden = false;
   } catch (err) {
+    console.error(err);
     showError(err.status === 404
       ? "We couldn't find that order."
       : 'Something went wrong. Please try again.');
