@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed | 100-Yard Apparel</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css?v=4">
+  <link rel="stylesheet" href="css/base.css?v=4">
+  <link rel="stylesheet" href="css/components.css?v=5">
+  <link rel="stylesheet" href="css/pages.css?v=5">
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="confirm">
+    <div id="loading" class="state">Loading your order…</div>
+
+    <div id="error" class="state" hidden>
+      <p id="error-msg" class="state__title"></p>
+      <a href="/list.html" class="btn btn--primary state__action">Back to Shop</a>
+    </div>
+
+    <div id="order" class="card confirm__card" hidden>
+      <h1 class="confirm__title">Thanks for shopping with us!</h1>
+      <p id="order-no" class="confirm__no"></p>
+      <ol id="items" class="confirm__items"></ol>
+      <div class="confirm__totals">
+        <p>Subtotal <span id="subtotal"></span></p>
+        <p>Shipping <span id="shipping"></span></p>
+        <p class="confirm__total">Total <span id="total"></span></p>
+        <p>Payment <span id="payment"></span></p>
+      </div>
+      <a href="/list.html" class="btn btn--ghost btn--block">Keep shopping</a>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script type="module" src="js/confirmation.js?v=1"></script>
+</body>
+</html>
