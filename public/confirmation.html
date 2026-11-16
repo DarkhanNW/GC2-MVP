@@ -10,24 +10,35 @@
   <link rel="stylesheet" href="css/pages.css">
 </head>
 <body>
-  <main>
-    <div id="loading">Loading your order...</div>
-    <div id="error" hidden>
-        <p id="error-msg"></p>
-        <a href="/list.html">Back to Shop</a>
+  <header class="site-header">
+    <div class="container site-header__bar">
+      <a href="/index.html" class="logo"><span class="logo__mark"></span>100-YARD APPAREL</a>
+      <a href="/cart.html" class="cart-btn">Cart</a>
     </div>
-    <div id="order" hidden>
-        <h1>Thanks for shopping with us! A summary of your order:</h1>
-        <p id="order-no"></p>
-        <ol id="items"></ol>
-        <p>Subtotal: <span id="subtotal"></span></p>
-        <p>Shipping: <span id="shipping"></span></p>
-        <p>Total: <span id="total"></span></p>
-        <p>Payment: <span id="payment"></span></p>
+  </header>
+
+  <main class="confirm">
+    <div id="loading" class="state">Loading your order…</div>
+
+    <div id="error" class="state" hidden>
+      <p id="error-msg" class="state__title"></p>
+      <a href="/list.html" class="btn btn--primary state__action">Back to Shop</a>
     </div>
 
+    <div id="order" class="card confirm__card" hidden>
+      <h1 class="confirm__title">Thanks for shopping with us!</h1>
+      <p id="order-no" class="confirm__no"></p>
+      <ol id="items" class="confirm__items"></ol>
+      <div class="confirm__totals">
+        <p>Subtotal <span id="subtotal"></span></p>
+        <p>Shipping <span id="shipping"></span></p>
+        <p class="confirm__total">Total <span id="total"></span></p>
+        <p>Payment <span id="payment"></span></p>
+      </div>
+      <a href="/list.html" class="btn btn--ghost btn--block">Keep shopping</a>
+    </div>
   </main>
 
-  <script type="module" src="js/confirmation.js"></script>.
+  <script type="module" src="js/confirmation.js"></script>
 </body>
 </html>
