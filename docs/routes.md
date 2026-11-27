@@ -189,7 +189,7 @@ A decline is an outcome, not a validation error: it is saved and gets a status p
 | `201` | Saved, accepted or declined. Body is the full saved request, including `_id`, `quotedPrice`, `status`, `statusNote` and, when `status` is `pooling`, `pool`. |
 | `400` | A field is missing or invalid: bad mobile or email format, `customer.region` not an active tier, `team` not in the team list, `category` or `size` not an allowed value, `qty` not a whole number from 1 to 3, `details` over 500 characters, `maxPrice` not a whole number above 0. `field` names the problem. Nothing is saved. |
 
-Response `201` (example values; real prices, target and shipping per item live in `services/sourcing.js`):
+Response `201` (a jersey request; constants live in `services/sourcing.js`, and the full table with reasons is in `docs/business.md` 4.6):
 
 ```json
 {
@@ -201,11 +201,11 @@ Response `201` (example values; real prices, target and shipping per item live i
   "qty": 2,
   "details": "Hurts #1, Kelly green alternate",
   "maxPrice": 4000,
-  "quotedPrice": 3600,
+  "quotedPrice": 3500,
   "poolKey": "philadelphia-eagles|jerseys",
   "status": "pooling",
   "statusNote": "Waiting for the pool to fill",
-  "pool": { "joined": 5, "target": 6, "shippingSolo": 900, "shippingPooled": 150 },
+  "pool": { "joined": 5, "target": 6, "shippingSolo": 3300, "shippingPooled": 51 },
   "createdAt": "2026-11-25T03:40:00.000Z"
 }
 ```
