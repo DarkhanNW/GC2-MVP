@@ -151,3 +151,85 @@ Response `200`:
 ```
 
 All five numbers are computed from saved orders and products, never hard-coded. With no orders, counts and revenue are `0` and `topSellingItem` is `null`.
+
+### POST /api/sourcing-requests
+
+Request body:
+
+```json
+{
+  "customer": {
+    "name": "Juan Dela Cruz",
+    "mobile": "09171234567",
+    "email": "juan@example.com",
+    "region": "Metro Manila"
+  },
+  "team": "philadelphia-eagles",
+  "category": "jerseys",
+  "size": "L",
+  "qty": 2,
+  "details": "Hurts #1, Kelly green alternate",
+  "maxPrice": 4000
+}
+```
+
+The server **ignores any `quotedPrice`, `poolKey`, `status`, `statusNote` or `poolFilledAt` sent by the browser**. In one MongoDB transaction it:
+
+1. Validates every field (see `docs/schema.md`).
+2. Calls `quoteRequest()` in `server/services/sourcing.js`: sets `quotedPrice` from the category price table and `poolKey` as `<team>|<category>`. If `maxPrice` < `quotedPrice` → `status: "declined"` with a counter-offer `statusNote`, saved, skip to step 4.
+3. Calls `joinPool()`: the request is saved as `pooling`. If the total `qty` of `pooling` requests with that `poolKey` is now **at or above** `POOL_TARGET`, every one of them (including this one) becomes `ordered` with the same `poolFilledAt`. Overfill is allowed: extra units count and ship with the pool.
+4. Returns the saved request.
+
+Overseas shipping is included in `quotedPrice` at the pooled rate. Local delivery is not part of `quotedPrice`: the status page shows the `customer.region` shipping-tier fee (same tiers as orders, from `GET /api/shipping-tiers`) as paid at handover. It is not stored on the request.
+
+A decline is an outcome, not a validation error: it is saved and gets a status page.
+
+| Status | When |
+| --- | --- |
+| `201` | Saved, accepted or declined. Body is the full saved request, including `_id`, `quotedPrice`, `status`, `statusNote` and, when `status` is `pooling`, `pool`. |
+| `400` | A field is missing or invalid: bad mobile or email format, `customer.region` not an active tier, `team` not in the team list, `category` or `size` not an allowed value, `qty` not a whole number from 1 to 3, `details` over 500 characters, `maxPrice` not a whole number above 0. `field` names the problem. Nothing is saved. |
+
+Response `201` (example values; real prices, target and shipping per item live in `services/sourcing.js`):
+
+```json
+{
+  "_id": "6751a2…",
+  "customer": { "name": "Juan Dela Cruz", "mobile": "09171234567", "email": "juan@example.com", "region": "Metro Manila" },
+  "team": "philadelphia-eagles",
+  "category": "jerseys",
+  "size": "L",
+  "qty": 2,
+  "details": "Hurts #1, Kelly green alternate",
+  "maxPrice": 4000,
+  "quotedPrice": 3600,
+  "poolKey": "philadelphia-eagles|jerseys",
+  "status": "pooling",
+  "statusNote": "Waiting for the pool to fill",
+  "pool": { "joined": 5, "target": 6, "shippingSolo": 900, "shippingPooled": 150 },
+  "createdAt": "2026-11-25T03:40:00.000Z"
+}
+```
+
+### GET /api/sourcing-requests
+
+Response `200`: all requests, newest first, same shape as above. `pool` is included only on `pooling` requests; on every other status the key is omitted.
+
+### GET /api/sourcing-requests/:id
+
+Response `200`: one request, same shape as above. `404` for unknown or malformed ids.
+
+### PATCH /api/sourcing-requests/:id
+
+Request body:
+
+```json
+{ "status": "ready", "statusNote": "Arrived, we'll contact you" }
+```
+
+Allowed moves only: `ordered → ready`, `ready → completed`, `pooling → cancelled`. `statusNote` is optional (string, at most 500 characters); when omitted the server sets the default note for the new status. Cancelling a `pooling` request lowers that pool's `joined` automatically, since `pool` is computed on read.
+
+| Status | When |
+| --- | --- |
+| `200` | Updated. Body is the full request. |
+| `400` | `status` missing, not one of the six values, or a move not listed above (e.g. `declined → ordered`, `pooling → ordered`). `statusNote` not a string or over 500 characters. `field` names the problem. |
+| `404` | Unknown or malformed id. |
