@@ -180,7 +180,7 @@ The server **ignores any `quotedPrice`, `poolKey`, `status`, `statusNote` or `po
 3. Calls `joinPool()`: the request is saved as `pooling`. If the total `qty` of `pooling` requests with that `poolKey` is now **at or above** `POOL_TARGET`, every one of them (including this one) becomes `ordered` with the same `poolFilledAt`. Overfill is allowed: extra units count and ship with the pool.
 4. Returns the saved request.
 
-Overseas shipping is included in `quotedPrice` at the pooled rate. Local delivery is charged at the `customer.region` shipping-tier fee when the request is `ready`, same tiers as orders.
+Overseas shipping is included in `quotedPrice` at the pooled rate. Local delivery is not part of `quotedPrice`: the status page shows the `customer.region` shipping-tier fee (same tiers as orders, from `GET /api/shipping-tiers`) as paid at handover. It is not stored on the request.
 
 A decline is an outcome, not a validation error: it is saved and gets a status page.
 
@@ -212,7 +212,7 @@ Response `201` (example values; real prices, target and shipping per item live i
 
 ### GET /api/sourcing-requests
 
-Response `200`: all requests, newest first, same shape as above. `pool` is included only on `pooling` requests. Empty list is still `200 []`. No auth in the MVP, same as `GET /api/orders`.
+Response `200`: all requests, newest first, same shape as above. `pool` is included only on `pooling` requests; on every other status the key is omitted.
 
 ### GET /api/sourcing-requests/:id
 

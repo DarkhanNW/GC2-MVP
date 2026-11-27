@@ -77,7 +77,7 @@ A customer's request for an item we don't stock. Prices and pool logic live in `
 | `customer.name` | String | Browser | Required |
 | `customer.mobile` | String | Browser | Required, PH mobile format `09XXXXXXXXX` (same rule as orders) |
 | `customer.email` | String | Browser | Required, valid email (same rule as orders) |
-| `customer.region` | String | Browser | Required, must match an active `shippingTiers.region` (same rule as orders). Sets the local delivery fee, charged when the request is `ready` |
+| `customer.region` | String | Browser | Required, must match an active `shippingTiers.region` (same rule as orders). Used to look up the local delivery fee from `shippingTiers` (same tiers as orders), shown on the status page and paid at handover. Not stored on the request |
 | `team` | String | Browser | Required, one of the 32 NFL team slugs in `server/nflTeams.js`, e.g. `philadelphia-eagles`. Player names, numbers and editions go in `details` |
 | `category` | String | Browser | Required, one of `jerseys`, `hoodies`, `tees` (`server/productCategories.js`) |
 | `size` | String | Browser | Required, one of `S`, `M`, `L`, `XL`, `XXL` |
@@ -91,4 +91,4 @@ A customer's request for an item we don't stock. Prices and pool logic live in `
 | `poolFilledAt` | Date | Server | Stamped on every request in the pool, with the same time, when the pool fills (including the request that filled it). Absent otherwise |
 | `createdAt` | Date | Mongoose | Timestamps |
 
-**Computed on read, not stored:** `pool: { joined, target, shippingSolo, shippingPooled }`. `joined` is the total `qty` of `pooling` requests with the same `poolKey`; `target` is `POOL_TARGET` in `services/sourcing.js`; `shippingSolo` and `shippingPooled` are the overseas shipping cost per item for that `category` when ordered alone vs in a full pool (at `target`), from `poolShipping(category)` in `services/sourcing.js`. `shippingPooled` is already included in `quotedPrice`, so these two are for display only. `pool` is included only when `status` is `pooling`; null or omitted otherwise.
+**Computed on read, not stored:** `pool: { joined, target, shippingSolo, shippingPooled }`. `joined` is the total `qty` of `pooling` requests with the same `poolKey`; `target` is `POOL_TARGET` in `services/sourcing.js`; `shippingSolo` and `shippingPooled` are the overseas shipping cost per item for that `category` when ordered alone vs in a full pool (at `target`), from `poolShipping(category)` in `services/sourcing.js`. `shippingPooled` is already included in `quotedPrice`, so these two are for display only. `pool` is included only when `status` is `pooling`; otherwise the key is omitted (absent, not `null`).
