@@ -6,7 +6,8 @@
     "test": "playwright test",
     "test:home": "playwright test e2e/home.spec.js",
     "test:list": "playwright test e2e/list.spec.js",
-    "test:detail": "playwright test e2e/detail.spec.js"
+    "test:detail": "playwright test e2e/detail.spec.js",
+    "test:request-status": "playwright test e2e/request-status.spec.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0"

@@ -127,11 +127,18 @@
   font-size: .65rem; font-weight: 700;
   letter-spacing: .06em; text-transform: uppercase;
   padding: 3px 8px; border-radius: 999px;
+  border: 1px solid transparent;
   background: var(--turf); color: #fff;
 }
 .badge--soldout { background: var(--muted); }
 .badge--low { background: var(--gold); color: var(--ink); }
 .badge--preorder { background: var(--ink); }
+.badge--declined { background: var(--danger); }
+.badge--pooling { background: var(--gold); color: var(--ink); }
+.badge--ordered { background: var(--ink); }
+.badge--ready { background: var(--turf); }
+.badge--completed { background: var(--turf-dark); }
+.badge--cancelled { background: var(--muted); }
 
 /* ---------- chips / inputs ---------- */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
