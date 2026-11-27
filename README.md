@@ -5,6 +5,14 @@ An online store that sources NFL jerseys, hoodies and game-day tops from oversea
 - **Deployed site:** https://one00-yard-apparel.onrender.com
 - **GC1 proposal:** Group 1, "100 Yard-Apparel"
 
+## Uptime monitor
+Render's free tier sleeps after ~15 min idle (~22 s cold start). To keep it awake,
+an UptimeRobot monitor requests `GET /api/health` every 10 minutes.
+- Monitor: UptimeRobot → "100-Yard Apparel – health"
+- Login: @DarkhanNW, M1
+- Alerts: email to M1 if the health check fails
+- Demo day: still open the site a few minutes before presenting, in case the monitor misses.
+
 ## Roster and ownership
 
 | Member | GitHub | Lane | Owns |
