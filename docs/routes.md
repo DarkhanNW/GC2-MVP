@@ -20,6 +20,11 @@ All routes return JSON. Every error response has the shape:
 | GET | `/api/orders/:id` | Read an order back for Confirmation | 200 · 404 | M3 |
 | GET | `/api/orders` | All saved orders for the owner screen | 200 | M6 |
 | GET | `/api/metrics` | The five owner numbers | 200 | M6 |
+| GET | `/api/teams` | The 32 NFL teams for the sourcing request form's dropdown | 200 | M3 |
+| POST | `/api/sourcing-requests` | Validate, quote against the ceiling, join or fill the pool, save | 201 (accepted or declined) · 400 | M3 |
+| GET | `/api/sourcing-requests` | All sourcing requests, newest first, for the owner queue | 200 | M3 |
+| GET | `/api/sourcing-requests/:id` | One request for the status page | 200 · 404 | M3 |
+| PATCH | `/api/sourcing-requests/:id` | Owner moves a request to its next status | 200 · 400 · 404 | M3 |
 
 ## Details
 
@@ -152,6 +157,21 @@ Response `200`:
 
 All five numbers are computed from saved orders and products, never hard-coded. With no orders, counts and revenue are `0` and `topSellingItem` is `null`.
 
+### GET /api/teams
+
+No query strings. Response `200`: all 32 NFL teams, sorted alphabetically by `name`.
+
+```json
+[
+  { "slug": "arizona-cardinals", "name": "Arizona Cardinals" },
+  { "slug": "atlanta-falcons", "name": "Atlanta Falcons" }
+]
+```
+
+- The list is read from `server/nflTeams.js`, the same list `POST /api/sourcing-requests` checks `team` against. It is the only source of truth: the front end never keeps its own copy.
+- `slug` is lowercase, words joined by hyphens (`new-england-patriots`). It is the value the form sends as `team`. `name` is what the dropdown shows.
+- The route takes no input, so there is no 4xx. An empty list never happens. If the request fails (network or 500), the form shows its error state and does not submit.
+
 ### POST /api/sourcing-requests
 
 Request body:
@@ -187,7 +207,7 @@ A decline is an outcome, not a validation error: it is saved and gets a status p
 | Status | When |
 | --- | --- |
 | `201` | Saved, accepted or declined. Body is the full saved request, including `_id`, `quotedPrice`, `status`, `statusNote` and, when `status` is `pooling`, `pool`. |
-| `400` | A field is missing or invalid: bad mobile or email format, `customer.region` not an active tier, `team` not in the team list, `category` or `size` not an allowed value, `qty` not a whole number from 1 to 3, `details` over 500 characters, `maxPrice` not a whole number above 0. `field` names the problem. Nothing is saved. |
+| `400` | A field is missing or invalid: bad mobile or email format, `customer.region` not an active tier, `team` not one of the slugs from `GET /api/teams`, `category` or `size` not an allowed value, `qty` not a whole number from 1 to 3, `details` over 500 characters, `maxPrice` not a whole number above 0. `field` names the problem. Nothing is saved. |
 
 Response `201` (example values; real prices, target and shipping per item live in `services/sourcing.js`):
 
