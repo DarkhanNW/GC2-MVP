@@ -123,6 +123,9 @@ test.describe("Request Status screen", () => {
     await expect(page.locator(".badge")).toHaveText("Pooling");
     await expect(page.locator(".request-status__note")).toHaveText("Waiting for the pool to fill");
     await expect(page.locator(".request-status__headline")).toHaveText("Your max ₱4,000 · You pay ₱3,600");
+    await expect(page.locator("#status-root")).not.toContainText("₱7,200");
+    await expect(page.locator("#status-root")).not.toContainText("₱400");
+    await expect(page.locator("#status-root")).not.toContainText("₱750");
 
     const progress = page.locator("progress.pool-progress");
     await expect(progress).toHaveAttribute("value", "5");

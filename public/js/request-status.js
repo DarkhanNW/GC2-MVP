@@ -72,7 +72,7 @@ function renderError(err) {
   root.querySelector("[data-retry]")?.addEventListener("click", loadRequest);
 }
 
-function renderPricingBlock(isDeclined, maxPrice, quotedPrice, qty) {
+function renderPricingBlock(isDeclined, maxPrice, quotedPrice) {
   if (isDeclined) {
     return `
       <div class="request-status__pricing">
@@ -81,17 +81,10 @@ function renderPricingBlock(isDeclined, maxPrice, quotedPrice, qty) {
       </div>`;
   }
 
-  const totalText = qty > 1
-    ? `${peso(quotedPrice)} × ${qty} = ${peso(quotedPrice * qty)} total · includes pooled overseas shipping`
-    : "Includes pooled overseas shipping";
-  const savingsText = maxPrice > quotedPrice
-    ? ` · saves ${peso(maxPrice - quotedPrice)}/item vs your max`
-    : "";
-
   return `
     <div class="request-status__pricing">
       <p class="request-status__headline">Your max ${peso(maxPrice)} · You pay ${peso(quotedPrice)}</p>
-      <p class="request-status__subtext">${totalText}${savingsText}</p>
+      <p class="request-status__subtext">Per item · includes pooled overseas shipping</p>
     </div>`;
 }
 
@@ -112,11 +105,7 @@ function renderPoolBlock(req) {
   if (req.pool.shippingSolo != null && req.pool.shippingPooled != null) {
     const solo = Number(req.pool.shippingSolo);
     const pooled = Number(req.pool.shippingPooled);
-    const saved = solo - pooled;
-    const savedNote = saved > 0
-      ? ` (save ${peso(saved)}/item, included in your price)`
-      : " (included in your price)";
-    shippingHTML = `<p class="pool__shipping">Overseas shipping: ${peso(pooled)} pooled vs ${peso(solo)} solo${savedNote}</p>`;
+    shippingHTML = `<p class="pool__shipping">Overseas shipping: ${peso(pooled)} pooled vs ${peso(solo)} solo (included in your price)</p>`;
   }
 
   return `
@@ -171,7 +160,7 @@ function renderRequest(req, tier) {
 
       ${statusNote ? `<p class="request-status__note${isDeclined ? " request-status__note--declined" : ""}">${escapeHTML(statusNote)}</p>` : ""}
 
-      ${renderPricingBlock(isDeclined, maxPrice, quotedPrice, qty)}
+      ${renderPricingBlock(isDeclined, maxPrice, quotedPrice)}
 
       ${renderPoolBlock(req)}
 
