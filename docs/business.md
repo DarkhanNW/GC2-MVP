@@ -38,7 +38,7 @@
 | --- | --- | --- | --- |
 | Nobody can buy more of a size than we have. | — | `POST /api/orders` (stock check inside the transaction) | Detail shows "Only N left" or disables the size; if stock ran out meanwhile, Checkout shows which item and size and the order is refused (409) |
 | Shipping depends on where you live. Fees (ESTIMATES): Metro Manila ₱100, Luzon ₱130, Visayas ₱160, Mindanao ₱180. | — | `calculateTotals()`, reading `shippingTiers` | Checkout shows the shipping fee for the region they pick before they place the order |
-| Free shipping for orders with a subtotal of at least ₱5,000. | Most expensive individual items are below ₱5,000, encouraging customers to purchase at least two items to qualify. | `calculateTotals()` reads `freeShippingMin` from the shipping-tier document. | Shipping shows FREE; below the line, a hint shows how much more to add |
+| Free shipping for orders with a subtotal of at least ₱5,000. | Most expensive individual items are below ₱5,000, encouraging customers to purchase at least two items to qualify. Our profit on the least profitable qualifying order is ₱1,228; free shipping costs at most ₱180 (15% of it), so the threshold stays at ₱5,000 (see 4.6). | `calculateTotals()` reads `freeShippingMin` from the shipping-tier document. | Shipping shows FREE; below the line, a hint shows how much more to add |
 | Up to 3 of one item and size per order. | Stock arrives in small imported batches; this limits scalpers while accommodating families or friends buying as a group. | `POST /api/orders` validation | Quantity control stops at the limit; the server refuses more with 400 |
 | We only deliver within the Philippines. | — | `POST /api/orders` validation (region must be an active tier) | Region is a dropdown of our four regions; anything else is refused with 400 |
 | If a size is running low, say so. Low-stock mark: 3 units. | — | Product `status` computed in `GET /api/products` and `/:id` | Low Stock badge on List; "Only N left" on Detail |
@@ -108,3 +108,79 @@ Values are from our test orders (MVP, no real sales yet)
 | Average order value | ₱2,340 | When average order value stays below ₱5,000, the owner places an option for a number of units for free shipping at checkout, because our free shipping quota is ₱5,000. | 
 | Top-selling item | Sunday Showdown Home Jersey (1 sold) | When one item sells 3 units or more within a restocking cycle, the owner prioritizes its' restocking as the 3-per-purchase limit indicates sufficient customer demand if demand for the product is 3 or more. (indicates full-purchase, or purchases between multiple customers sufficiently) |
 | Items low on stock | 17 sizes at or below 3; 2 sold out as our test order (MVP) (Cold Front Fleece Hoodie M, Midnight Alternate Jersey M) | When a size reaches our low-stock mark of 3, the owner reorders due to our small order batches. 
+
+
+## 4.6 Sourcing numbers (special-sourcing requests, #134)
+
+These are the constants behind `quoteRequest()`, `joinPool()` and `poolShipping()` in `server/services/sourcing.js`. All peso figures use **₱60 = US$1** and are rounded to the nearest peso.
+
+### Assumptions
+
+- **Supplier cost.** Licensed NFL wholesale prices are not public (licensed wholesalers sell only to approved retailer accounts), so we estimate supplier cost from retail list prices: **list price ÷ (1 + retailer markup)**, using a retailer markup of 150% on jerseys, 70% on tees and 50% on hoodies (group assumption). Tees and hoodies use licensed MLB items as a price proxy.
+- **We sell out-of-season Game jerseys and team gear**, which is why we can buy cheaper from overseas. We apply a **40% off-season discount** to supplier cost, below the 53% clearance discount we found on a licensed jersey listing ($82.64 vs $174.99 list). Our clearance evidence is for a jersey; we assume the same 40% applies to tees and hoodies.
+- **Import charges.** Commercial shipments are over the ₱10,000 de minimis, so we pay **15% duty** (knitted apparel, HS chapter 61) and **12% VAT** on goods + freight + duty.
+- **Shipping.** Catalog stock and pooled special orders travel together by commercial sea freight (LCL, US$120–180 per CBM, +25% Q4 peak surcharge). A pool rides along with our next merchandise shipment instead of paying the LCL minimum on its own. Customers who choose to wait for a pool are willing to wait for the product, so we use slow, cheap freight.
+
+### Landed cost per item
+
+| | Jersey | Tee | Hoodie |
+| --- | --- | --- | --- |
+| Retail list price | $130 (Game jersey) | $27.99 | $59.99 |
+| Supplier cost (list ÷ (1 + markup)) | ₱3,120 | ₱988 | ₱2,400 |
+| After 40% off-season discount | ₱1,872 | ₱593 | ₱1,440 |
+| + Overseas freight (pooled, per item) | ₱51 | ₱34 | ₱141 |
+| + Duty 15% | ₱288 | ₱94 | ₱237 |
+| + VAT 12% | ₱265 | ₱86 | ₱218 |
+| **Landed cost, catalog stock** | **₱2,477** | **₱807** | **₱2,036** |
+| + Special-order handling (₱760 ÷ 6) | ₱127 | ₱127 | ₱127 |
+| **Landed cost, special order** | **₱2,604** | **₱934** | **₱2,163** |
+
+Our current catalog prices in `server/seed.js` stay as they are: every item sells above its landed cost (jerseys ₱623–923 profit, tees ₱383–643, hoodies ₱614–914).
+
+### Overseas shipping per item: `shippingSolo` vs `shippingPooled`
+
+| Category | `shippingSolo` | `shippingPooled` |
+| --- | --- | --- |
+| `jerseys` | ₱3,300 | ₱51 |
+| `tees` | ₱3,300 | ₱34 |
+| `hoodies` | ₱4,200 | ₱141 |
+
+- **Solo** is what one item costs to ship from the US alone by economy post: US$40–55 for 0.5 kg (tee, jersey) and US$55–70 for 1 kg (packed hoodie). We use the high end of each range because we buy in Q4 peak season, a bulky hoodie is billed by volume, and we would rather overstate the cost than understate it. Solo is display only: no customer pays it.
+- **Pooled** is the item's share of our sea-freight shipment by volume (our estimates: tee ≈ 0.003 CBM, jersey ≈ 0.0045 CBM, hoodie ≈ 0.0125 CBM packed, at US$150/CBM + 25% Q4). It is included in `quotedPrice`.
+
+### `POOL_TARGET` = 6
+
+Each special order has a fixed cost that does not depend on quantity:
+
+| Fixed cost per special order | ₱ |
+| --- | --- |
+| Our time: finding, ordering and tracking the item (estimate: 2 hrs at the NCR minimum wage, ₱755 ÷ 8) | 189 |
+| US parcel from the supplier to our forwarder (USPS Ground Advantage, 1 lb, US$8.74) | 524 |
+| Customs brokerage (rides in the merchandise shipment, which already pays one entry fee) | 0 |
+| Receiving and sorting the special order in Manila (estimate: 0.5 hr) | 47 |
+| **Total** | **760** |
+
+We let each item carry ₱150 of that cost: ₱760 ÷ ₱150 = 5.07, rounded up to **6**. Six is a balance between saving costs and how long customers wait for demand to build. We also only order once the pool fills, so we never buy stock nobody committed to. Customers pay when the pool reaches its target (no deposit).
+
+### `quotedPrice` per category
+
+**`quotedPrice` = our featured catalog price + a ₱300 convenience fee.** Special orders are anchored to the catalog price customers already know (our featured item in each category). The ₱300 fee pays for pre-ordering an item we do not stock, with no deposit; special items are also likely to be in higher demand. It is about double the ₱127 extra handling a special order costs us.
+
+| Category | Featured catalog price | `quotedPrice` | Landed (special order) | Profit per item |
+| --- | --- | --- | --- | --- |
+| `jerseys` | ₱3,200 (Sunday Showdown Home) | **₱3,500** | ₱2,604 | ₱896 |
+| `hoodies` | ₱2,800 (Endzone Pullover) | **₱3,100** | ₱2,163 | ₱937 |
+| `tees` | ₱1,250 (Tailgate Graphic) | **₱1,550** | ₱934 | ₱616 |
+
+**Our advantage over buying direct.** A fan buying the same item alone from the US pays the list price plus solo shipping: about ₱11,100 for a Game jersey (₱7,800 + ₱3,300), ₱7,799 for a hoodie and ₱4,979 for a tee. Each single item is under the ₱10,000 de minimis, so the fan pays no duty or VAT on it; our customer pays ₱3,500, ₱3,100 and ₱1,550, saving ₱7,600, ₱4,699 and ₱3,429 per item (before local delivery, which both pay). The saving comes from two things: pooled shipping (₱34–141 per item instead of ₱3,300–4,200) and buying out-of-season stock at a discount. Caveat: if the item is sold by a retailer that offers free international shipping to the Philippines (Amazon has offered this on eligible items for orders of US$49 or more), the fan's shipping cost drops to ₱0 and the saving is only the price difference (₱7,800 vs ₱3,500 for a jersey). That is what a Shopee seller handling requests one by one cannot match: we pool demand and buy off-season, so we price below what a fan pays importing alone.
+
+### Decision with a number: free-shipping threshold
+
+| Qualifying basket (≥ ₱5,000) | Subtotal | Profit | After ₱180 free shipping |
+| --- | --- | --- | --- |
+| 2 × Sideline Zip hoodie (lowest profit) | ₱5,300 | ₱1,228 | ₱1,048 |
+| Retro jersey + Sideline Zip hoodie | ₱5,750 | ₱1,237 | ₱1,057 |
+| Sideline Zip hoodie + 2 × Fourth Quarter tee | ₱5,030 | ₱1,380 | ₱1,200 |
+| 4 × Tailgate tee (2 sizes) | ₱5,000 | ₱1,772 | ₱1,592 |
+
+Our profit on the least profitable qualifying order is ₱1,228; free shipping costs at most ₱180 (15% of it), so the threshold stays at ₱5,000.
