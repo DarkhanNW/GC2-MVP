@@ -184,6 +184,7 @@
   color: var(--ink); margin-bottom: var(--s2);
 }
 .state__action { margin-top: var(--s4); }
+.state__extra { margin-top: var(--s3); }
 
 /* ---------- toast ---------- */
 .toast {

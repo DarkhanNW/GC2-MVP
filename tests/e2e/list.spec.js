@@ -236,4 +236,31 @@ test.describe("List screen", () => {
     const width = await overflowState(page);
     expect(width.scrollWidth).toBeLessThanOrEqual(width.innerWidth);
   });
+
+  test("links empty search state to request.html with encoded team query at 375px", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await installApiMock(page);
+    await page.route("**/request.html**", (route) =>
+      route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Request</h1>" }));
+
+    await page.goto("/list.html?q=Eagles%20%26%20Chiefs");
+
+    const link = page.locator("#list-status .state__extra a");
+    await expect(link).toHaveText("Can't find it? Request it");
+    await expect(link).toHaveAttribute("href", "request.html?team=Eagles%20%26%20Chiefs");
+
+    const width = await overflowState(page);
+    expect(width.scrollWidth).toBeLessThanOrEqual(width.innerWidth);
+
+    await link.click();
+    await expect(page).toHaveURL(/\/request\.html\?team=Eagles%20%26%20Chiefs$/);
+  });
+
+  test("omits the request link when empty state has no search query", async ({ page }) => {
+    await installApiMock(page, { mode: "empty" });
+    await page.goto("/list.html");
+
+    await expect(page.locator("#list-status .state__title")).toHaveText("No gear matches those filters");
+    await expect(page.locator("#list-status .state__extra a")).toHaveCount(0);
+  });
 });
