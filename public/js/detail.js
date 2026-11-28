@@ -4,7 +4,7 @@ import {
 import { getProduct } from "./products-api.js";
 import { qs, escapeHTML, money, imageFor } from "./ui.js";
 import { stockState, stockMessage } from "./stock.js";
-import { BRAND, categoryLabel } from "./catalog.js";
+import { BRAND, categoryLabel, requestHref } from "./catalog.js";
 import { addToCart, MAX_QTY } from "./cart-store.js";
 
 const id = new URLSearchParams(location.search).get("id");
@@ -41,6 +41,36 @@ function renderNotFound() {
 
 /* ---------- render ---------- */
 
+function renderRequestBox(p, soldOut, soldOutSizes) {
+  if (!soldOut && soldOutSizes.length === 0) return "";
+  const btnClass = soldOut ? "btn btn--primary" : "btn btn--ghost";
+  const initialSize = soldOutSizes[0] || "";
+  const href = escapeHTML(requestHref({ category: p.category, size: initialSize }));
+
+  if (soldOutSizes.length > 1) {
+    const prompt = soldOut
+      ? "All sizes are sold out. Pick a size to request:"
+      : `Sold out in ${soldOutSizes.join(", ")}. Pick a size to request:`;
+    return `
+      <div class="request-box">
+        <label class="request-box__text" for="request-size">${escapeHTML(prompt)}</label>
+        <div class="request-box__controls">
+          <select class="select select--compact" id="request-size">
+            ${soldOutSizes.map((size) => `<option value="${escapeHTML(size)}">Size ${escapeHTML(size)}</option>`).join("")}
+          </select>
+          <a class="${btnClass}" id="request-link" href="${href}">Request this</a>
+        </div>
+      </div>`;
+  }
+
+  const note = initialSize ? `Size ${initialSize} is sold out.` : "This item is sold out.";
+  return `
+    <div class="request-box">
+      <p class="request-box__text" id="request-note">${escapeHTML(note)}</p>
+      <a class="${btnClass} btn--block" id="request-link" href="${href}" aria-describedby="request-note">Request this</a>
+    </div>`;
+}
+
 function render(p) {
   document.title = `${p.name} — ${BRAND.name}`;
   crumb.textContent = p.name;
@@ -50,6 +80,9 @@ function render(p) {
   const status = p.status;
   const soldOut = status === "sold_out";
   const lowSizes = new Set(stock.lowSizes.map(({ size }) => size));
+  const soldOutSizes = p.sizes
+    .filter(({ size }) => (stock.counts[size] ?? 0) <= 0)
+    .map(({ size }) => size);
 
   root.innerHTML = `
     <div class="detail">
@@ -99,6 +132,8 @@ function render(p) {
           ${soldOut ? "Sold out" : "Select a size"}
         </button>
 
+        ${renderRequestBox(p, soldOut, soldOutSizes)}
+
         <p class="detail__desc">${escapeHTML(p.description)}</p>
 
         <dl class="specs">
@@ -138,6 +173,12 @@ function wireSizeSelector(p, soldOut, stock, lowSizes) {
       cta.disabled = false;
       cta.textContent = "Add to cart";
     });
+  });
+
+  const requestSize = qs("#request-size");
+  const requestLink = qs("#request-link");
+  requestSize?.addEventListener("change", () => {
+    requestLink.setAttribute("href", requestHref({ category: p.category, size: requestSize.value }));
   });
 
   if (soldOut) return;

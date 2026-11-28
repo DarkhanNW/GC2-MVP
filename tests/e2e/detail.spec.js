@@ -7,6 +7,7 @@ const lowStock = productBySlug("kc-home-jersey");
 const lowStockTwo = productBySlug("lv-hoodie");
 const soldOut = productBySlug("dal-hoodie");
 const preOrder = productBySlug("mia-tee");
+const inStock = productBySlug("sf-home-jersey");
 
 let errors;
 
@@ -223,5 +224,55 @@ test.describe("Detail screen", () => {
 
     const width = await overflowState(page);
     expect(width.scrollWidth).toBeLessThanOrEqual(width.innerWidth);
+  });
+
+  test("links a sold-out size to request.html with category and size at 375px", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await installApiMock(page);
+    await page.route("**/request.html**", (route) =>
+      route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Request</h1>" }));
+
+    await page.goto(`/detail.html?id=${lowStock._id}`);
+
+    const link = page.locator("#request-link");
+    await expect(link).toBeVisible();
+    await expect(link).toHaveText("Request this");
+    await expect(link).toHaveAttribute("href", "request.html?category=jerseys&size=XL");
+
+    const width = await overflowState(page);
+    expect(width.scrollWidth).toBeLessThanOrEqual(width.innerWidth);
+
+    await link.click();
+    await expect(page).toHaveURL(/\/request\.html\?category=jerseys&size=XL$/);
+  });
+
+  test("links a sold-out product to request.html with selectable sold-out size at 375px", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await installApiMock(page);
+    await page.route("**/request.html**", (route) =>
+      route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Request</h1>" }));
+
+    await page.goto(`/detail.html?id=${soldOut._id}`);
+
+    const link = page.locator("#request-link");
+    await expect(link).toHaveText("Request this");
+    await expect(link).toHaveAttribute("href", "request.html?category=hoodies&size=L");
+
+    await page.locator("#request-size").selectOption("XL");
+    await expect(link).toHaveAttribute("href", "request.html?category=hoodies&size=XL");
+
+    const width = await overflowState(page);
+    expect(width.scrollWidth).toBeLessThanOrEqual(width.innerWidth);
+
+    await link.click();
+    await expect(page).toHaveURL(/\/request\.html\?category=hoodies&size=XL$/);
+  });
+
+  test("omits the request link when every size is in stock", async ({ page }) => {
+    await installApiMock(page);
+    await page.goto(`/detail.html?id=${inStock._id}`);
+
+    await expect(page.locator(".detail__title")).toHaveText(inStock.name);
+    await expect(page.locator("#request-link")).toHaveCount(0);
   });
 });

@@ -29,3 +29,12 @@ export function categoryLabel(id, { plural = false } = {}) {
 export function categoryHref(id) {
   return id ? `list.html?category=${encodeURIComponent(id)}` : "list.html";
 }
+
+export function requestHref({ team, category, size } = {}) {
+  const parts = [];
+  for (const [key, raw] of [["team", team], ["category", category], ["size", size]]) {
+    const value = String(raw ?? "").trim();
+    if (value) parts.push(`${key}=${encodeURIComponent(value)}`);
+  }
+  return parts.length ? `request.html?${parts.join("&")}` : "request.html";
+}

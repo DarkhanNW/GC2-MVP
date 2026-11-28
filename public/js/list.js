@@ -4,8 +4,8 @@ import {
 } from "./components.js";
 import { getProducts } from "./products-api.js";
 import { parseListState, buildListHref } from "./list-url.js";
-import { categoryById } from "./catalog.js";
-import { qs, qsa, debounce } from "./ui.js";
+import { categoryById, requestHref } from "./catalog.js";
+import { qs, qsa, debounce, escapeHTML } from "./ui.js";
 
 const els = {
   grid: qs("#product-grid"),
@@ -60,10 +60,15 @@ async function load({ syncSearch = false } = {}) {
     if (items.length === 0) {
       els.grid.innerHTML = "";
       els.count.textContent = "0 items";
+      const query = params.q.trim();
+      const requestAction = query
+        ? `<a class="btn btn--primary" href="${escapeHTML(requestHref({ team: query }))}">Can't find it? Request it</a>`
+        : "";
       els.status.innerHTML = emptyState({
         title: "No gear matches those filters",
         message: "Try removing a filter or searching for a different team.",
         action: `<a class="btn btn--ghost" href="list.html">Clear all filters</a>`,
+        extra: requestAction,
       });
       return;
     }

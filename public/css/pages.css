@@ -143,6 +143,16 @@
 .specs dt { color: var(--muted); }
 .specs dd { margin: 0; font-weight: 600; text-align: right; }
 
+.request-box {
+  display: grid; gap: var(--s2);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bone);
+}
+.request-box__text { font-size: .85rem; color: var(--muted); }
+.request-box__controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.request-box__controls .btn { flex: 1 1 160px; }
+
 /* ---------- confirmation ---------- */
 .confirm { max-width: 560px; margin-inline: auto; padding: var(--s6) var(--s4); }
 .confirm__card { padding: var(--s5); gap: var(--s4); }

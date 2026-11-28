@@ -156,12 +156,13 @@ export function skeletonDetail() {
     </div>`;
 }
 
-export function emptyState({ title, message, action = "" }) {
+export function emptyState({ title, message, action = "", extra = "" }) {
   return `
     <div class="state">
       <p class="state__title">${escapeHTML(title)}</p>
       <p>${escapeHTML(message)}</p>
       ${action ? `<div class="state__action">${action}</div>` : ""}
+      ${extra ? `<div class="state__extra">${extra}</div>` : ""}
     </div>`;
 }
 
